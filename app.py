@@ -118,6 +118,68 @@ def reg_handle():
         return redirect(url_for("login_handle"))
 
 
+@app.route("/logout")  #注销
+def logout_handle():
+    res = {"err": 1,"desc":"未登录！"}
+    if session.get("user_info"):
+        session.pop("user_info")
+        res["err"] = 0
+        res["desc"] = "注销成功！"
+    return jsonify(res)
+
+
+
+
+
+@app.route("/send_sms_code")
+def send_sms_code_handle():
+    phone = request.args.get("phone")
+
+    result = {"err": 1, "desc": "内部错误！"}
+    # verify_code = send_sms_code(phone)  #发送验证码
+    verify_code = "1234"
+    if verify_code:
+        # 发送短信验证码成功
+        session[phone] = verify_code
+        
+        result["err"] = 0
+        result["desc"] = "发送短信验证码成功！"
+
+    return jsonify(result)
+
+def send_sms_code(phone):
+    '''
+    函数功能：发送短信验证码（6位随机数字）
+    函数参数：
+    phone 接收短信验证码的手机号
+    返回值：发送成功返回验证码，失败返回False
+    '''
+    verify_code = str(random.randint(100000, 999999))
+
+    try:
+        url = "http://v.juhe.cn/sms/send"
+        params = {
+            "mobile": phone,  # 接受短信的用户手机号码
+            "tpl_id": "162901",  # 您申请的短信模板ID，根据实际情况修改
+            "tpl_value": "#code#=%s" % verify_code,  # 您设置的模板变量，根据实际情况修改
+            "key": "ab75e2e54bf3044898459cb209b195e4",  # 应用APPKEY(应用详细页查询)
+        }
+        params = urllib.parse.urlencode(params).encode()
+
+        f = urllib.request.urlopen(url, params)
+        content = f.read()
+        res = json.loads(content)
+        
+        print(res)
+
+        if res and res['error_code'] == 0:
+            return verify_code
+        else:
+            return False
+    except:
+        return False   
+
+
 
 if __name__ == "__main__":
     app.run(port=80, debug=True)

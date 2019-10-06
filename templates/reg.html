@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <title>注册</title>
-<link href="css/base.css" rel="stylesheet" type="text/css">
-<link href="css/css.css" rel="stylesheet" type="text/css">
-<script src="js/jquery-2.1.1.min.js"></script>
+<link href="{{ url_for('static', filename='css/base.css') }}" rel="stylesheet" type="text/css">
+<link href="{{ url_for('static', filename='css/css.css') }}" rel="stylesheet" type="text/css">
+<script src="{{ url_for('static', filename='js/jquery-2.1.1.min.js') }}"></script>
 <style>
 .tab {
 	overflow: hidden;
@@ -32,6 +32,50 @@ $(function(){
 		$(".conlist .conbox").eq(i).show().siblings().hide();
 		})
 	})
+    $("#send_sms_code").click(function() {
+        // 校验手机号格式
+        var phone = $("#phone").val();
+
+        if (! /1\d{10}/.test(phone)) {
+            alert("手机号格式错误！");
+            $("#phone").focus();
+            return;
+        }
+
+        // 通过Ajax将手机号发送给服务器后端程序
+        $.ajax({
+            url: "/send_sms_code",
+            data: {
+                phone: phone
+            },
+            success: function(data){
+                if (data["err"] === 0) {
+                    // 成功
+                    var s = 60;
+                    $("#send_sms_code").prop("disabled", true);
+                    $("#send_sms_code").html(s + "S");
+                    
+                    var timer = window.setInterval(function() {
+                        --s;
+                        if (s === 0) {
+                            window.clearInterval(timer);
+                            $("#send_sms_code").html("重新发送");
+                            $("#send_sms_code").prop("disabled", false);
+                            return;
+                        }
+            
+                        $("#send_sms_code").html(s + "S");
+                    }, 1000);                    
+                } else {
+                    // 失败
+                    alert("发送短信验证码失败，" + data["desc"]);
+                }
+            },
+            error: function(){
+                alert("发送请求失败，请检查网络连接！");
+            }
+        });
+    });
 })
 </script>
 </head>
@@ -48,53 +92,34 @@ $(function(){
         <h2>注册</h2>
     </div>
     <div class="loginbox">
-        <div class="tab">
-            <ul>
-                <li class="on">我是买家</li>
-                <li>我是卖家</li>
-            </ul>
-        </div>
+        
         <div class="conlist">
             <div class="conbox" style="display:block;">
-                <p>
-                    <div class="fl res-text">用户名：</div><div><input type="text" class="loginuser"></div>
-                </p>
-                <p>
-                   <div class="fl res-text">密码：</div><div><input type="password" class="loginuser"></div>
-                </p>
-                <p>
-                   <div class="fl res-text">确认密码：</div><div><input type="password" class="loginuser"></div>
-                </p>
-                <p>
-                   <div class="fl res-text">验证码：</div>
-                   <div class="fl"><input type="password" class="loginuser2"></div>
-                   <div class="fl same-code">获取验证码</div>
-                   <!--<div class="fl same-code2">60秒后重新获取</div>-->
-                </p>
-                <p>
-                    <input type="button" class="loginbtn" value="注 册">
-                </p>
+                <form action="/reg" method="POST">
+                    <p>
+                        <div class="fl res-text">用户名：</div><div><input type="text" class="loginuser" id="uname" name="uname"></div>
+                    </p>
+                    <p>
+                    <div class="fl res-text">密码：</div><div><input type="password" class="loginuser" id="upass" name="upass"></div>
+                    </p>
+                    <p>
+                    <div class="fl res-text">确认密码：</div><div><input type="password" class="loginuser" id="upass2" name="upass2"></div>
+                    </p>
+                    <p>
+                        <div class="fl res-text">手机号：</div><div><input type="text" class="loginuser" id="phone" name="phone"></div>
+                    </p>
+                    <p>
+                    <div class="fl res-text">验证码：</div>
+                    <div class="fl"><input type="text" class="loginuser2" id="verify_code" name="verify_code"></div>
+                    <div class="fl same-code" id="send_sms_code">获取验证码</div>
+                    
+                    </p>
+                    <p>
+                        <input type="submit" class="loginbtn" value="注 册">
+                    </p>
+                </form>
             </div>
-            <div class="conbox">
-            	<p>
-                    <div class="fl res-text">用户名：</div><div><input type="text" class="loginuser"></div>
-                </p>
-                <p>
-                   <div class="fl res-text">密码：</div><div><input type="password" class="loginuser"></div>
-                </p>
-                <p>
-                   <div class="fl res-text">确认密码：</div><div><input type="password" class="loginuser"></div>
-                </p>
-                <p>
-                   <div class="fl res-text">验证码：</div>
-                   <div class="fl"><input type="password" class="loginuser2"></div>
-                   <div class="fl same-code">获取验证码</div>
-                   <!--<div class="fl same-code2">60秒后重新获取</div>-->
-                </p>
-                <p>
-                    <input type="button" class="loginbtn" value="注 册">
-                </p>
-            </div>
+        
         </div>
     </div>
 </div>
