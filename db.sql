@@ -11,3 +11,44 @@ CREATE TABLE shop_user (
 ) ENGINE=InnoDB AUTO_INCREMENT=1001 DEFAULT CHARSET=utf8;
 -- 内置管理员
 INSERT INTO shop_user values (DEFAULT, 'root', md5('rootabc123'),'12345678911', now(), now(), 2, 1);
+
+-- 商品信息表
+CREATE TABLE `merchinfo` (
+  `MerchID` varchar(10) NOT NULL,
+  `MerchName` varchar(50) NOT NULL,
+  `MerchType` varchar(20) NOT NULL,
+  `MerchPrice` decimal(10,2) NOT NULL,
+  `MerchUnit` varchar(10) DEFAULT NULL,
+	`MerchState` enum ('1', '2') NOT NULL DEFAULT '1',  -- 1表示商品存在  --2表示商品已删除
+  PRIMARY KEY (`MerchID`)
+) ENGINE=InnoDB AUTO_INCREMENT=1001 DEFAULT CHARSET=utf8;
+
+-- 收货地址表
+CREATE TABLE `shipaddr` (
+  uid int unsigned,
+  uname varchar(20) NOT NULL UNIQUE,
+  `Receiver` varchar(10) NOT NULL COMMENT '收货人',
+  `ShipPhone` varchar(20) NOT NULL,
+  `Adress` varchar(255) NOT NULL,
+  PRIMARY KEY (`uid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- 订单表
+CREATE TABLE `order` (
+  `OrderID`  int unsigned AUTO_INCREMENT,
+  `uid` int unsigned,
+  `OrderState` enum ('1', '2') NOT NULL DEFAULT '1', -- 1表示未收货，2表示已经收货
+  PRIMARY KEY (`OrderID`),
+	FOREIGN KEY (`uid`) REFERENCES shipaddr (`uid`)
+) ENGINE=InnoDB  AUTO_INCREMENT=1001 DEFAULT CHARSET=utf8;
+
+
+-- 订单信息表
+CREATE TABLE `orderinfo` (
+  `OrderID`  int unsigned ,
+  `MerchID` varchar(10) NOT NULL,
+	`MerchID` varchar(50) NOT NULL,
+  `Num` int(11) NOT NULL,
+  `price` decimal(10,2) NOT NULL,
+  FOREIGN KEY (`OrderID`) REFERENCES `order` (`OrderID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
