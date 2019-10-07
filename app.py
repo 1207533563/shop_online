@@ -3,14 +3,7 @@ from flask import Flask, render_template, request, jsonify, session,abort,redire
 import pymysql
 
 conf = json.load(open("server_conf.json"))  # 加载配置信息
-conn =pymysql.connect(
-    host=conf["db_server_ip"],
-    port=conf["db_server_port"],
-    user=conf["db_user"],
-    passwd=conf["db_password"],
-    db=conf["db_name"],
-    charset ='utf8'
-)
+
 
 
 app = Flask(__name__)
@@ -38,6 +31,15 @@ def login_handle():
         if not(len(upass) >= 6 and len(upass) <= 16):
             abort(Response("密码格式错误！"))
 
+        conn =pymysql.connect(
+            host=conf["db_server_ip"],
+            port=conf["db_server_port"],
+            user=conf["db_user"],
+            passwd=conf["db_password"],
+            db=conf["db_name"],
+            charset ='utf8'
+        )
+    
         with conn.cursor() as cur:
             cur.execute("SELECT * from shop_user where uname=%s and upass=md5(%s)", (uname,uname+upass))
             res = cur.fetchone()
@@ -68,6 +70,8 @@ def login_handle():
                 return redirect(url_for("index"))
             except Exception as e:
                 print(e)
+            finally:
+                conn.close()
         
         else:
             #登录失败
@@ -94,6 +98,15 @@ def reg_handle():
         if not re.fullmatch("[a-zA-Z0-9_]{4,20}",uname):
             abort(Response("用户名不合法!"))
         
+        conn =pymysql.connect(
+            host=conf["db_server_ip"],
+            port=conf["db_server_port"],
+            user=conf["db_user"],
+            passwd=conf["db_password"],
+            db=conf["db_name"],
+            charset ='utf8'
+        )
+
         with conn.cursor() as cur:
             cur.execute("SELECT uid from shop_user where uname=%s", (uname,))
             if cur.rowcount != 0:
@@ -113,6 +126,8 @@ def reg_handle():
                 conn.commit()
         except:
             abort(Response("注册失败！"))  
+        finally:
+            conn.close()
 
         session.pop(phone)  
         return redirect(url_for("login_handle"))
@@ -128,7 +143,80 @@ def logout_handle():
     return jsonify(res)
 
 
+#找回密码
+@app.route("/repasswd", methods=["GET", "POST"])
+def repasswd():
+    if request.method == "GET":
+        return render_template("repasswd.html")
+    elif request.method == "POST":
+        uname = request.form.get("uname")
+        phone = request.form.get("phone")
+        verify_code = request.form.get("verify_code")
+        upass = request.form.get("upass")
+        upass2 = request.form.get("upass2")
 
+        conn =pymysql.connect(
+            host=conf["db_server_ip"],
+            port=conf["db_server_port"],
+            user=conf["db_user"],
+            passwd=conf["db_password"],
+            db=conf["db_name"],
+            charset ='utf8'
+        )
+
+        with conn.cursor() as cur:
+            cur.execute("SELECT uid from shop_user where uname=%s and phone=%s", (uname,phone))
+            if cur.rowcount == 0:
+                abort(Response("绑定手机号不正确!"))
+
+        if not(len(upass) >= 6 and len(upass) <= 16 and upass == upass2):
+            abort(Response("密码格式错误！"))
+ 
+        if  session.get(phone) != verify_code:
+            abort(Response("验证码错误!"))
+
+        try:
+            with conn.cursor() as cur:
+                cur.execute("update shop_user set upass=md5(%s) where uname=%s and phone=%s", (uname+upass,uname,phone))
+                conn.commit()
+        finally:
+            session.pop(phone)
+            conn.close()
+        return redirect(url_for("login_handle"))
+            
+
+@app.route("/req_merchInfo")  #请求商品信息
+def req_merchInfo():
+    MerchType = request.args.get("merchtype")
+    res = {"err": 1,"MerchType":MerchType,
+            "MerchInfo":{
+                 
+            }
+            }
+
+    
+
+    conn =pymysql.connect(
+            host=conf["db_server_ip"],
+            port=conf["db_server_port"],
+            user=conf["db_user"],
+            passwd=conf["db_password"],
+            db=conf["db_name"],
+            charset ='utf8'
+        )
+    try:
+        with conn.cursor() as cur:
+                cur.execute("select MerchName,MerchPhoto,MerchPrice from merchinfo where MerchType=%s and Merchstate=1",(MerchType))
+                if cur.rowcount != 0:
+                    res["err"]= 0
+                    rows = cur.fetchall() 
+                    
+                    res["MerchInfo"]=rows
+    finally:
+        conn.close()
+    print(res)
+    
+    return jsonify(res)
 
 
 @app.route("/send_sms_code")

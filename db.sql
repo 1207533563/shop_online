@@ -14,12 +14,13 @@ INSERT INTO shop_user values (DEFAULT, 'root', md5('rootabc123'),'12345678911', 
 
 -- 商品信息表
 CREATE TABLE `merchinfo` (
-  `MerchID` varchar(10) NOT NULL,
+  `MerchID` int unsigned AUTO_INCREMENT,
   `MerchName` varchar(50) NOT NULL,
   `MerchType` varchar(20) NOT NULL,
   `MerchPrice` decimal(10,2) NOT NULL,
   `MerchUnit` varchar(10) DEFAULT NULL,
 	`MerchState` enum ('1', '2') NOT NULL DEFAULT '1',  -- 1表示商品存在  --2表示商品已删除
+  `MerchPhoto` varchar(20) NOT NULL,
   PRIMARY KEY (`MerchID`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1001 DEFAULT CHARSET=utf8;
 
@@ -34,7 +35,7 @@ CREATE TABLE `shipaddr` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- 订单表
-CREATE TABLE `order` (
+CREATE TABLE `ordertable` (
   `OrderID`  int unsigned AUTO_INCREMENT,
   `uid` int unsigned,
   `OrderState` enum ('1', '2') NOT NULL DEFAULT '1', -- 1表示未收货，2表示已经收货
@@ -47,8 +48,8 @@ CREATE TABLE `order` (
 CREATE TABLE `orderinfo` (
   `OrderID`  int unsigned ,
   `MerchID` varchar(10) NOT NULL,
-	`MerchID` varchar(50) NOT NULL,
+	`MerchName` varchar(50) NOT NULL,
   `Num` int(11) NOT NULL,
   `price` decimal(10,2) NOT NULL,
-  FOREIGN KEY (`OrderID`) REFERENCES `order` (`OrderID`)
+  FOREIGN KEY (`OrderID`) REFERENCES `ordertable` (`OrderID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

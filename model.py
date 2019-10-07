@@ -62,6 +62,8 @@ def order_inquire(key,value):
         conn.close()         
     return 1 
 
+print(order_inquire("OrderID",1001))
+
 
 def orderinfo_add(OrderID,MerchID,MerchName,Num,price):
     '''
