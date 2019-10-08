@@ -1,6 +1,7 @@
 import os, re, random, json, urllib.parse, urllib.request,datetime,math
 from flask import Flask, render_template, request, jsonify, session,abort,redirect,url_for,Response
 import pymysql
+import model
 
 conf = json.load(open("server_conf.json"))  # 加载配置信息
 
@@ -183,19 +184,21 @@ def repasswd():
             session.pop(phone)
             conn.close()
         return redirect(url_for("login_handle"))
+
+
+@app.route("/merch_manage")  #商品管理
+def merch_manage():
+    return render_template("merch_manage.html")
+
             
 
-@app.route("/req_merchInfo")  #请求商品信息
+@app.route("/req_merchInfo")  #请求商品信息接口
 def req_merchInfo():
     MerchType = request.args.get("merchtype")
     res = {"err": 1,"MerchType":MerchType,
-            "MerchInfo":{
-                 
+            "MerchInfo":{       
             }
-            }
-
-    
-
+        }  
     conn =pymysql.connect(
             host=conf["db_server_ip"],
             port=conf["db_server_port"],
@@ -214,9 +217,75 @@ def req_merchInfo():
                     res["MerchInfo"]=rows
     finally:
         conn.close()
-    print(res)
+    return jsonify(res)
+
+
+@app.route("/add_merch")  #添加商品信息接口
+def add_merch():
+    MerchName = request.args.get("MerchName")
+    MerchType = request.args.get("MerchType")
+    MerchPrice = request.args.get("MerchPrice")
+    MerchUnit = request.args.get("MerchUnit")
+    MerchPhoto = request.args.get("MerchPhoto")
+
+    print(MerchPhoto)
+
+    res = {"err": 1,"desc":"内部错误！"
+        }  
+    rsp = model.increase_mearch(MerchName,MerchType,MerchPrice,MerchUnit,MerchPhoto)
+    if rsp == 0:
+        res["err"] = 0
+        res["desc"] = "增加成功！"
+    elif rsp == 2:
+        res["err"] = 2
+        res["desc"] = "商品已存在"
     
     return jsonify(res)
+
+
+@app.route("/update_merch")  #修改商品信息接口
+def update_merch():
+    MerchName = request.args.get("MerchName")
+    MerchPrice = request.args.get("MerchPrice")
+    MerchID = request.args.get("MerchID")
+
+
+    res = {"err": 1,"desc":"内部错误！"
+        }  
+    rsp = model.change_mearch(MerchName,MerchPrice,MerchID)
+    if rsp == 0:
+        res["err"] = 0
+        res["desc"] = "修改成功！"
+    elif rsp == 2:
+        res["err"] = 2
+        res["desc"] = "该商品已存在"
+    
+    return jsonify(res)
+
+
+@app.route("/show_merch")  #修改商品信息网页展示商品信息的接口
+def show_merch():
+    MerchName = request.args.get("MerchName")
+    page = request.args.get("page")
+    pagesize = request.args.get("pagesize")
+    res = {"err": 1,"desc":"内部错误！","info_num":0,"MerchInfo":{}
+        }  
+    rsp = model.find_mearch_name(MerchName,int(page),int(pagesize))
+    
+    if rsp != 1:
+        res["err"] = 0
+        res["desc"] = "查找成功！"
+        res["MerchInfo"] = rsp  
+    rsp_num = model.find_mearch_count(MerchName)
+    if rsp_num != -1:
+        res["info_num"] = rsp_num
+    return jsonify(res)
+
+        
+
+
+
+
 
 
 @app.route("/send_sms_code")

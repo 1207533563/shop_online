@@ -7,7 +7,7 @@ import datetime
 conf = json.load(open("server_conf.json",encoding = "utf-8"))  # 加载配置信息
 
 
-def order_add(uid, uname, Receiver, ShipPhone, Adress):
+def orderaddr_add(uid, uname, Receiver, ShipPhone, Adress):
     '''
     函数功能：增加地址，
     函数参数：uid 订单的用户ID
@@ -25,7 +25,7 @@ def order_add(uid, uname, Receiver, ShipPhone, Adress):
     return 1 
 
 
-def order_del(uid):
+def orderaddr_del(uid):
     '''
     函数功能：删除地址，
     函数参数：uid 订单的用户ID
@@ -43,7 +43,7 @@ def order_del(uid):
     return 1 
 
 
-def order_update(uid, uname, Receiver, ShipPhone, Adress):
+def orderaddr_update(uid, uname, Receiver, ShipPhone, Adress):
     '''
     函数功能：修改地址，
     函数参数：uid 订单的用户ID
@@ -61,15 +61,15 @@ def order_update(uid, uname, Receiver, ShipPhone, Adress):
     return 1 
 
 
-def order_inquire(uid, key, value):
+def orderaddr_inquire(uname):
     '''
     函数功能：查看地址，
-    函数参数：key 查找的键,　value查找的值
+    函数参数：uname,查找的用户名
     函数返回值：修改成功返回查找数据，失败返回1
     '''
     conn = pymysql.connect(host=conf["db_server_ip"], port=conf["db_server_port"], user=conf["db_user"], passwd=conf["db_password"], db=conf["db_name"], charset="utf8")
 
-    sql = ("select * from shipaddr where uid=%s"%uid).format(key,value)
+    sql = ("select * from shipaddr where uname=%s"%uname)
     try:
         with conn.cursor() as cur:  # 获取一个游标对象(Cursor类)，用于执行SQL语句
             cur.execute(sql)
