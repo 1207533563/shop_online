@@ -10,6 +10,8 @@ conf = json.load(open("server_conf.json"))  # 加载配置信息
 app = Flask(__name__)
 app.secret_key = b'N\x1cI\xcf6\xe1\x98\xa1\x06\x0c\x8f\x05\xf7\xca\xe6\xa0H0\xa7B\xfc\xde\xd7i'
 
+app.config["UPLOAD_FOLDER"] = os.path.join(os.path.dirname(os.path.abspath(__file__)),"static\products") 
+
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -46,7 +48,7 @@ def login_handle():
             res = cur.fetchone()
             
         if res:
-            #登录成功跳转个人中心
+            #登录成功跳转首页
             cur_login_time = datetime.datetime.now()
             user_info = {
                 "uid":res[0],
@@ -59,9 +61,7 @@ def login_handle():
                 "priv":res[6],
                 "state":res[7],
                 "login_time": cur_login_time
-            }
-
-            
+            }          
             session["user_info"] = user_info
 
             try:
@@ -190,6 +190,42 @@ def repasswd():
 def merch_manage():
     return render_template("merch_manage.html")
 
+
+@app.route("/product_list")  #商品列表
+def product_list():
+    return render_template("product_list.html")
+
+
+@app.route("/add_merch", methods=["GET", "POST"])  #添加商品
+def add_merch():
+    if request.method == "GET":
+        return render_template("add_merch.html")
+    elif request.method == "POST":
+        MerchName = request.form.get("MerchName")
+        MerchType = request.form.get("MerchType")
+        MerchPrice = request.form.get("MerchPrice")
+        MerchUnit = request.form.get("MerchUnit")
+        MerchPhoto = request.files["MerchPhoto"]
+        MerchPhoto_name = MerchPhoto.filename
+        print(MerchPhoto_name)
+        print(MerchType)
+        file_path = os.path.join(app.config["UPLOAD_FOLDER"], MerchPhoto_name)
+        MerchPhoto.save(file_path)
+
+
+        res = {"err": 1,"desc":"内部错误！"
+            }  
+        rsp = model.increase_mearch(MerchName,MerchType,MerchPrice,MerchUnit,MerchPhoto_name)
+        if rsp == 0:
+            res["err"] = 0
+            res["desc"] = "增加成功！"
+        elif rsp == 2:
+            res["err"] = 2
+            res["desc"] = "商品已存在"
+        
+        
+        return res["desc"]
+
             
 
 @app.route("/req_merchInfo")  #请求商品信息接口
@@ -220,27 +256,7 @@ def req_merchInfo():
     return jsonify(res)
 
 
-@app.route("/add_merch")  #添加商品信息接口
-def add_merch():
-    MerchName = request.args.get("MerchName")
-    MerchType = request.args.get("MerchType")
-    MerchPrice = request.args.get("MerchPrice")
-    MerchUnit = request.args.get("MerchUnit")
-    MerchPhoto = request.args.get("MerchPhoto")
 
-    print(MerchPhoto)
-
-    res = {"err": 1,"desc":"内部错误！"
-        }  
-    rsp = model.increase_mearch(MerchName,MerchType,MerchPrice,MerchUnit,MerchPhoto)
-    if rsp == 0:
-        res["err"] = 0
-        res["desc"] = "增加成功！"
-    elif rsp == 2:
-        res["err"] = 2
-        res["desc"] = "商品已存在"
-    
-    return jsonify(res)
 
 
 @app.route("/update_merch")  #修改商品信息接口
@@ -280,12 +296,6 @@ def show_merch():
     if rsp_num != -1:
         res["info_num"] = rsp_num
     return jsonify(res)
-
-        
-
-
-
-
 
 
 @app.route("/send_sms_code")

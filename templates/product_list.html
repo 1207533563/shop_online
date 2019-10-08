@@ -1,0 +1,326 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link href="{{ url_for('static', filename='css/common.css') }}" rel="stylesheet" type="text/css" />
+<link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" type="text/css" />
+<script src="{{ url_for('static', filename='js/jquery-1.8.3.min.js') }}" type="text/javascript"></script>
+<script src="{{ url_for('static', filename='js/jquery.SuperSlide.2.1.1.js') }}" type="text/javascript"></script>
+<script src="{{ url_for('static', filename='js/common_js.js') }}" type="text/javascript"></script>
+<script src="{{ url_for('static', filename='js/footer.js') }}" type="text/javascript"></script>
+<script src="{{ url_for('static', filename='js/accordion.js') }}" type="text/javascript"></script>
+<script src="{{ url_for('static', filename='js/lrtk.js') }}" type="text/javascript"></script>
+<title>产品列表页</title>
+<script>
+		$(function(){
+			req_merchInfo("zh","",1);
+
+			$("#logout").click(function(){
+				$.ajax({
+					url: "logout",
+					
+					success:function(data){
+						if (data["err"] === 0){
+							alert("注销登录成功！");
+							location.href = "/login";
+						}
+					}
+	
+				});
+			});
+
+			$("#zh").click(function(){
+			req_merchInfo("zh","",1);				
+
+			});
+
+			function removeByValue(arr, val) {
+				for(var i=0; i<arr.length; i++) {
+				if(arr[i] == val) {
+					arr.splice(i, 1);
+					break;
+					}
+				}
+			}
+
+			function req_merchInfo(sortid,merchname,page){
+				var typelist= ["zh","ls","js","sh","qt"]
+				removeByValue(typelist, sortid);
+
+				$.ajax({   //通过ajax获取后台的消息
+				url: "show_merch",
+				type: "GET",
+
+				contentType: "application/json; charset=UTF-8",
+				data: {
+					MerchName: merchname,
+					page: page,
+					pagesize: 16,
+				},
+				success:function(data){
+						if (data["err"] === 0){  //接收商品信息成功
+							console.log(data)
+							var merchinfo_num = data["info_num"]
+							var merchinfo = data["MerchInfo"]
+							var pagecount = Math.ceil(merchinfo_num/16)
+							$("#page_head").html(page+"/"+pagecount)
+							var htmltext = "" 
+							for (i=0;i<merchinfo.length;i++){
+								htmltext += "<li class='gl-item'><em class='icon_special tejia'></em><div class='Borders'><div class='img'><a href='Product_Detailed.html'><img src='"+"static/products/"+merchinfo[i][6]+"'style='width:220px;height:220px'></a></div><div class='Price'><b>¥"+merchinfo[i][3]+"</b><span>/"+merchinfo[i][4]+"</span></div><div class='name'><a href='Product_Detailed.html'>"+merchinfo[i][1]+"</a></div><div class='p-operate'><a href='#' class='p-o-btn Collect'><em></em>购买</a><a href='#' class='p-o-btn shop_cart'><em></em>加入购物车</a></div></div></li>"								
+							}
+							$("#product_show").html(htmltext)
+							$("#"+sortid).attr("class","on")
+							for ( var n = 0; n <typelist.length; n++){
+								$("#"+typelist[n]).attr("class","off")
+							}
+						}
+					},
+				});
+			}
+	});
+</script>
+</head>
+<body>
+<head>
+		<div id="header_top">
+			<div id="top">
+			<div class="Inside_pages">
+				{% if session.get("user_info") %} <!--判断是否登录-->
+		
+				<div class="Collection"><span>欢迎你</span><a href="#" class="green">{{session.get("user_info").get("uname")}}</a> <a id="logout" href="javascrpt:;" class="green">注销</a></div>
+			<div class="hd_top_manu clearfix">
+				<ul class="clearfix">
+				<li class="hd_menu_tit" data-addclass="hd_menu_hover"><a href="#">首页</a></li> 
+				<li class="hd_menu_tit" data-addclass="hd_menu_hover"> <a href="#">个人中心</a> </li>
+				<li class="hd_menu_tit" data-addclass="hd_menu_hover"><a href="#">我的购物车<b>(23)</b></a></li>	
+				</ul>
+			</div>
+			{% else %}
+			<div class="Collection"><a href="login" class="green">请登录</a> <a href="reg" class="green">免费注册</a></div>
+		
+			{% endif %}
+		
+		
+			</div>
+			</div>
+			<div id="header"  class="header page_style">
+			<div class="logo"><a href="index"><img src="static/images/logo.png" /></a></div>
+  <!--结束图层-->
+  <div class="Search">
+        <div class="search_list">
+            <ul>
+                <li class="current"><a href="#">产品</a></li>
+                <li><a href="#">信息</a></li>
+            </ul>
+        </div>
+        <div class="clear search_cur">
+           <input name="searchName" id="searchName" class="search_box" onkeydown="keyDownSearch()" type="text">
+           <input name="" type="submit" value="搜 索"  class="Search_btn"/>
+        </div>
+        <div class="clear hotword">热门搜索词：香醋&nbsp;&nbsp;&nbsp;茶叶&nbsp;&nbsp;&nbsp;草莓&nbsp;&nbsp;&nbsp;葡萄&nbsp;&nbsp;&nbsp;菜油</div>
+</div>
+ <!--购物车样式-->
+ <div class="hd_Shopping_list" id="Shopping_list">
+   <div class="s_cart"><a href="#">我的购物车</a> <i class="ci-right">&gt;</i><i class="ci-count" id="shopping-amount">0</i></div>
+   <div class="dorpdown-layer">
+    <div class="spacer"></div>
+	 <!--<div class="prompt"></div><div class="nogoods"><b></b>购物车中还没有商品，赶紧选购吧！</div>-->
+	 <ul class="p_s_list">	   
+		<li>
+		    <div class="img"><img src="images/tianma.png"></div>
+		    <div class="content"><p class="name"><a href="#">产品名称</a></p><p>颜色分类:紫花8255尺码:XL</p></div>
+			<div class="Operations">
+			<p class="Price">￥55.00</p>
+			<p><a href="#">删除</a></p></div>
+		  </li>
+		</ul>		
+	 <div class="Shopping_style">
+	 <div class="p-total">共<b>1</b>件商品　共计<strong>￥ 515.00</strong></div>
+	  <a href="Shop_cart.html" title="去购物车结算" id="btn-payforgoods" class="Shopping">去购物车结算</a>
+	 </div>	 
+   </div>
+ </div>
+</div>
+<!--菜单栏-->
+	<div class="Navigation" id="Navigation">
+		 <ul class="Navigation_name">
+			<li><a href="/">首页</a></li>
+			<li><a href="products_list">商城</a></li>
+			<li><a href="Brands">联系我们</a></li>
+		 </ul>			 
+		</div>
+	<script>$("#Navigation").slide({titCell:".Navigation_name li",trigger:"click"});</script>
+    </div>
+</head>
+<!--产品列表样式-->
+<div class="Inside_pages">
+<!--位置-->
+
+<!--条件筛选样式-->
+
+  </div>
+ <!--产品列表样式-->
+ <div  class="scrollsidebar side_green clearfix" id="scrollsidebar" > 
+    <div class="show_btn" id="rightArrow"><span></span></div>
+     <!--左侧样式-->
+   <div class="page_left_style side_content"  >
+  
+   <div class="side_list">
+    
+  
+  </div>
+ </div>
+ <div class="page_right_style" style="float: left;">
+ <div class="Sorted">
+  <div class="Sorted_style">
+   <a href="javascrpt:;" class="off" id="zh">综合<i class="iconfont icon-fold" ></i></a>
+   <a href="javascrpt:;" class="on" id="ls">零食<i class="iconfont icon-fold" ></i></a>
+   <a href="javascrpt:;" class="off" id="js">酒水<i class="iconfont icon-fold" ></i></a>
+   <a href="javascrpt:;" class="off" id="sh"> 生活<i class="iconfont icon-fold" ></i></a>
+   <a href="javascrpt:;" class="off" id="qt">其他<i class="iconfont icon-fold" ></i></a>
+   </div>
+   <!--产品搜索-->
+   <div class="products_search">
+    <input name="" type="text" class="search_text" value="请输入你要搜索的产品" onfocus="this.value=''" onblur="if(!value){value=defaultValue;}"><input name="" type="submit" value="" class="search_btn">
+   </div>
+   <!--页数-->
+   <div class="s_Paging">
+   <span id="page_head"></span>
+   <a href="javascrpt:;" class="on">&lt;</a>
+   <a href="javascrpt:;">&gt;</a>
+   </div>
+   </div>
+   <div class="p_list  clearfix">
+   <ul id="product_show"></ul>
+   <div class="Paging">
+    <div class="Pagination">
+    <a href="#">首页</a>
+     <a href="#" class="pn-prev disabled">&lt;上一页</a>
+	 <a href="#">下一页&gt;</a>
+	 <a href="#">尾页</a>	
+     </div>
+    </div>
+   </div>
+</div>
+</div>
+
+<!--网站地图-->
+<div class="fri-link-bg clearfix">
+    <div class="fri-link">
+        <div class="logo left margin-r20"><img src="images/fo-logo.jpg" width="152" height="81" /></div>
+        <div class="left"><img src="images/qd.jpg" width="90"  height="90" />
+            <p>扫描下载APP</p>
+        </div>
+       <div class="">
+    <dl>
+	 <dt>新手上路</dt>
+	 <dd><a href="#">售后流程</a></dd>
+     <dd><a href="#">购物流程</a></dd>
+     <dd><a href="#">订购方式</a> </dd>
+     <dd><a href="#">隐私声明 </a></dd>
+     <dd><a href="#">推荐分享说明 </a></dd>
+	</dl>
+	<dl>
+	 <dt>配送与支付</dt>
+	 <dd><a href="#">保险需求测试</a></dd>
+     <dd><a href="#">专题及活动</a></dd>
+     <dd><a href="#">挑选保险产品</a> </dd>
+     <dd><a href="#">常见问题 </a></dd>
+	</dl>
+	<dl>
+	 <dt>售后保障</dt>
+	 <dd><a href="#">保险需求测试</a></dd>
+     <dd><a href="#">专题及活动</a></dd>
+     <dd><a href="#">挑选保险产品</a> </dd>
+     <dd><a href="#">常见问题 </a></dd>
+	</dl>
+	<dl>
+	 <dt>支付方式</dt>
+	 <dd><a href="#">保险需求测试</a></dd>
+     <dd><a href="#">专题及活动</a></dd>
+     <dd><a href="#">挑选保险产品</a> </dd>
+     <dd><a href="#">常见问题 </a></dd>
+	</dl>	
+    <dl>
+	 <dt>帮助中心</dt>
+	 <dd><a href="#">保险需求测试</a></dd>
+     <dd><a href="#">专题及活动</a></dd>
+     <dd><a href="#">挑选保险产品</a> </dd>
+     <dd><a href="#">常见问题 </a></dd>
+	</dl>
+     <dl>
+	 <dt>帮助中心</dt>
+	 <dd><a href="#">保险需求测试</a></dd>
+     <dd><a href="#">专题及活动</a></dd>
+     <dd><a href="#">挑选保险产品</a> </dd>
+     <dd><a href="#">常见问题 </a></dd>
+	</dl>
+     <dl>
+	 <dt>帮助中心</dt>
+	 <dd><a href="#">保险需求测试</a></dd>
+     <dd><a href="#">专题及活动</a></dd>
+     <dd><a href="#">挑选保险产品</a> </dd>
+     <dd><a href="#">常见问题 </a></dd>
+	</dl>	   
+   </div>
+    </div>
+</div>
+<!--网站地图END-->
+<!--网站页脚-->
+<div class="copyright">
+    <div class="copyright-bg">
+        <div class="hotline">为生活充电在线 <span>招商热线：****-********</span> 客服热线：400-******</div>
+        <div class="hotline co-ph">
+            <p>版权所有Copyright ©***************</p>
+            <p>*ICP备***************号 不良信息举报</p>
+            <p>总机电话：****-*********/194/195/196 客服电话：4000****** 传 真：********
+                
+                <a href="http://www.mycodes.net/" target="_blank">源码之家</a></p>
+        </div>
+    </div>
+</div>
+ <!--右侧菜单栏购物车样式-->
+<div class="fixedBox">
+  <ul class="fixedBoxList">
+      <li class="fixeBoxLi user"><a href="#"> <span class="fixeBoxSpan"></span> <strong>消息中心</strong></a> </li>
+    <li class="fixeBoxLi cart_bd" style="display:block;" id="cartboxs">
+		<p class="good_cart">9</p>
+			<span class="fixeBoxSpan"></span> <strong>购物车</strong>
+			<div class="cartBox">
+       		<div class="bjfff"></div><div class="message">购物车内暂无商品，赶紧选购吧</div>    </div></li>
+    <li class="fixeBoxLi Service "> <span class="fixeBoxSpan"></span> <strong>客服</strong>
+      <div class="ServiceBox">
+        <div class="bjfffs"></div>
+        <dl onclick="javascript:;">
+		    <dt><img src="images/Service1.png"></dt>
+		       <dd><strong>QQ客服1</strong>
+		          <p class="p1">9:00-22:00</p>
+		           <p class="p2"><a href="http://wpa.qq.com/msgrd?v=3&amp;uin=123456&amp;site=DGG三端同步&amp;menu=yes">点击交谈</a></p>
+		          </dd>
+		        </dl>
+				<dl onclick="javascript:;">
+		          <dt><img src="images/Service1.png"></dt>
+		          <dd> <strong>QQ客服1</strong>
+		            <p class="p1">9:00-22:00</p>
+		            <p class="p2"><a href="http://wpa.qq.com/msgrd?v=3&amp;uin=123456&amp;site=DGG三端同步&amp;menu=yes">点击交谈</a></p>
+		          </dd>
+		        </dl>
+	          </div>
+     </li>
+	 <li class="fixeBoxLi code cart_bd " style="display:block;" id="cartboxs">
+			<span class="fixeBoxSpan"></span> <strong>微信</strong>
+			<div class="cartBox">
+       		<div class="bjfff"></div>
+			<div class="QR_code">
+			 <p><img src="images/erweim.jpg" width="180px" height="180px" /></p>
+			 <p>微信扫一扫，关注我们</p>
+			</div>		
+			</div>
+			</li>
+
+    <li class="fixeBoxLi Home"> <a href="./"> <span class="fixeBoxSpan"></span> <strong>收藏夹</strong> </a> </li>
+    <li class="fixeBoxLi BackToTop"> <span class="fixeBoxSpan"></span> <strong>返回顶部</strong> </li>
+  </ul>
+</div>
+</body>
+</html>

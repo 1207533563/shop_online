@@ -12,6 +12,7 @@ else{
 	}
 });
 
+
 $(document).ready(function(){
   
   $('li.hd_menu_tit').mousemove(function(){

@@ -26,21 +26,21 @@ CREATE TABLE `merchinfo` (
 
 -- 收货地址表
 CREATE TABLE `shipaddr` (
-  uid int unsigned,
+  addrID int unsigned AUTO_INCREMENT,
   uname varchar(20) NOT NULL UNIQUE,
   `Receiver` varchar(10) NOT NULL COMMENT '收货人',
   `ShipPhone` varchar(20) NOT NULL,
   `Adress` varchar(255) NOT NULL,
-  PRIMARY KEY (`uid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+  PRIMARY KEY (`addrID`)
+) ENGINE=InnoDB AUTO_INCREMENT=1001 DEFAULT CHARSET=utf8;
 
 -- 订单表
 CREATE TABLE `ordertable` (
   `OrderID`  int unsigned AUTO_INCREMENT,
-  `uid` int unsigned,
+  `addrID` int unsigned,
   `OrderState` enum ('1', '2') NOT NULL DEFAULT '1', -- 1表示未收货，2表示已经收货
   PRIMARY KEY (`OrderID`),
-	FOREIGN KEY (`uid`) REFERENCES shipaddr (`uid`)
+	FOREIGN KEY (`addrID`) REFERENCES shipaddr (`addrID`)
 ) ENGINE=InnoDB  AUTO_INCREMENT=1001 DEFAULT CHARSET=utf8;
 
 

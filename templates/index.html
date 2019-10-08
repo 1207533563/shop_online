@@ -37,9 +37,36 @@
 			req_merchInfo("ls","方便速食");				
 
 		});
-		$("#qt1").click(function(){
+		$("#foodqt1").click(function(){
 			req_merchInfo("ls","其他");				
 
+		});
+
+
+		$("#pj1").click(function(){
+			req_merchInfo("jsyl","啤酒");				
+		});
+		$("#tsyl1").click(function(){
+			req_merchInfo("jsyl","碳酸饮料");				
+		});
+		$("#jsylqt1").click(function(){
+			req_merchInfo("jsyl","其他");				
+		});
+
+
+		$("#xyyp1").click(function(){
+			req_merchInfo("shyp","洗浴用品");				
+		});
+		$("#rcyz1").click(function(){
+			req_merchInfo("shyp","日常用纸");				
+		});
+		$("#shypqt1").click(function(){
+			req_merchInfo("shyp","其他");				
+		});
+
+
+		$("#zh1").click(function(){
+			req_merchInfo("qt","杂货");				
 		});
 
 		function req_merchInfo(sort,merchtype){  //请求商品信息函数,这里的两个参数 sort为四大分类如零食（ls），酒水饮料（jsyl）等，merchtype为商品类型，用于查表如早餐面包（zcmb）等
@@ -107,11 +134,9 @@
       <div class="Collection"><span>欢迎你</span><a href="#" class="green">{{session.get("user_info").get("uname")}}</a> <a id="logout" href="javascrpt:;" class="green">注销</a></div>
 	<div class="hd_top_manu clearfix">
 	  <ul class="clearfix">
-	   <li class="hd_menu_tit" data-addclass="hd_menu_hover"><a href="#">首页</a></li> 
-	   <li class="hd_menu_tit" data-addclass="hd_menu_hover"> <a href="#">我的小充</a> </li>
-	   <li class="hd_menu_tit" data-addclass="hd_menu_hover"><a href="#">消息中心</a></li>
-       <li class="hd_menu_tit" data-addclass="hd_menu_hover"><a href="#">商品分类</a></li>
-        <li class="hd_menu_tit" data-addclass="hd_menu_hover"><a href="#">我的购物车<b>(23)</b></a></li>	
+			<li class="hd_menu_tit" data-addclass="hd_menu_hover"><a href="#">首页</a></li> 
+			<li class="hd_menu_tit" data-addclass="hd_menu_hover"> <a href="#">个人中心</a> </li>
+			<li class="hd_menu_tit" data-addclass="hd_menu_hover"><a href="#">我的购物车<b>(23)</b></a></li>		
 	  </ul>
 	</div>
 	{% else %}
@@ -390,201 +415,200 @@
     </div>
   </div>
   <!--板块名称-->
-    <div class="Plate_column Plate_column_right">
-    <div class="Plate_name">
-    <h2>酒水饮料</h2>
-    <div class="Sort_link"><a href="#" class="name" id="pj1">啤酒</a><a href="#" class="name" id="tsyl1">碳酸饮料</a><a href="#" class="name" id="jsylqt1">其他</a></div>
-    <a href="#" class="Plate_link"> <img src="static/images/bk_img_22.png" /></a>
-   
-    </div>
-    <div class="Plate_product">
-    <ul id="lists">
-     <li class="product_display">
-     <a href="" class="Collect"><em></em>收藏</a>
-     <a href="#" class="img_link"><img src="products/p_15.jpg"  width="140" height="140"/></a>
-     <a href="#" class="name">墨西哥原装进口 科罗娜啤酒</a>
-     <h3><b>￥</b>34.00</h3>
-    <div class="Detailed">
-	   <div class="content">
-		  <p class="center"><a href="#" class="Buy_btn">立即购买</a></p>
-		  </div>
-	   </div>
-     </li>
-     <li class="product_display">
-      <a href="" class="Collect"><em></em>收藏</a>
-     <a href="#" class="img_link"><img src="products/p_13.jpg"  width="140" height="140"/></a>
-     <a href="#" class="name">墨西哥原装进口 科罗娜啤酒</a>
-     <h3>￥34.00</h3>
-      <div class="Detailed">
-	   <div class="content">
-		  <p class="center"><a href="#" class="Buy_btn">立即购买</a></p>
-		  </div>
-	   </div>
-     </li>
-     <li class="product_display">
-      <a href="" class="Collect"><em></em>收藏</a>
-     <a href="#" class="img_link"><img src="products/p_12.jpg"  width="140" height="140"/></a>
-     <a href="#" class="name">墨西哥原装进口 科罗娜啤酒</a>
-     <h3><b>￥</b>34.00</h3>
-       <div class="Detailed">
-	   <div class="content">
-		  <p class="center"><a href="#" class="Buy_btn">立即购买</a></p>
-		  </div>
-	   </div>
-     </li>
-     <li class="product_display">
-      <a href="" class="Collect"><em></em>收藏</a>
-     <a href="#" class="img_link"><img src="products/p_11.jpg"  width="140" height="140"/></a>
-     <a href="#" class="name">墨西哥原装进口 科罗娜啤酒</a>
-     <h3><b>￥</b>34.00</h3>
-     <div class="Detailed">
-	   <div class="content">
-		  <p class="center"><a href="#" class="Buy_btn">立即购买</a></p>
-		  </div>
-	   </div>
-     </li>
-    </ul>
-    </div>
-  </div>
-   <div class="Plate_column Plate_column_left">
-    <div class="Plate_name">
-    <h2>生活用品</h2>
-    <div class="Sort_link"><a href="#" class="name" id="xyyp1">洗浴用品</a><a href="#" class="name" id="rcyz1">日常用纸</a><a href="#" class="name" id="shypqt1">其他</a></div>
-    <a href="#" class="Plate_link"> <img src="static/images/bk_img_19.png" /></a>
-   
-    </div>
-    <div class="Plate_product">
-    <ul id="lists">
-     <li class="product_display">
-     <a href="" class="Collect"><em></em>收藏</a>
-     <a href="#" class="img_link"><img src="products/p_21.jpg"  width="140" height="140"/></a>
-     <a href="#" class="name">墨西哥原装进口 科罗娜啤酒</a>
-     <h3><b>￥</b>34.00</h3>
-    <div class="Detailed">
-	   <div class="content">
-		  <p class="center"><a href="#" class="Buy_btn">立即购买</a></p>
-		  </div>
-	   </div>
-     </li>
-     <li class="product_display">
-      <a href="" class="Collect"><em></em>收藏</a>
-     <a href="#" class="img_link"><img src="products/p_25.jpg"  width="140" height="140"/></a>
-     <a href="#" class="name">墨西哥原装进口 科罗娜啤酒</a>
-     <h3><b>￥</b>34.00</h3>
-      <div class="Detailed">
-	   <div class="content">
-		  <p class="center"><a href="#" class="Buy_btn">立即购买</a></p>
-		  </div>
-	   </div>
-     </li>
-     <li class="product_display">
-      <a href="" class="Collect"><em></em>收藏</a>
-     <a href="#" class="img_link"><img src="products/p_22.jpg"  width="140" height="140"/></a>
-     <a href="#" class="name">墨西哥原装进口 科罗娜啤酒</a>
-     <h3><b>￥</b>34.00</h3>
-       <div class="Detailed">
-	   <div class="content">
-		  <p class="center"><a href="#" class="Buy_btn">立即购买</a></p>
-		  </div>
-	   </div>
-     </li>
-     <li class="product_display">
-      <a href="" class="Collect"><em></em>收藏</a>
-     <a href="#" class="img_link"><img src="products/p_24.jpg"  width="140" height="140"/></a>
-     <a href="#" class="name">墨西哥原装进口 科罗娜啤酒</a>
-     <h3><b>￥</b>34.00</h3>
-     <div class="Detailed">
-	   <div class="content">
-		  <p class="center"><a href="#" class="Buy_btn">立即购买</a></p>
-		  </div>
-	   </div>
-     </li>
-    </ul>
-    </div>
-  </div>
+	<div class="clearfix Plate_style">
+		<div class="Plate_column Plate_column_right">
+			<div class="Plate_name">
+				<h2>酒水饮料</h2>
+				<div class="Sort_link"><a href="javascript:;" class="name" id="pj1">啤酒</a><a href="javascript:;" class="name" id="tsyl1">碳酸饮料</a><a href="javascript:;" class="name" id="jsylqt1">其他</a></div>
+				<a href="#" class="Plate_link"> <img src="static/images/bk_img_22.png" /></a>
+			</div>
+			<div class="Plate_product">
+				<ul id="jsyl_lists">
+					<li class="product_display">
+						<a href="#" class="Collect"><em></em>收藏</a>
+						<a href="#" class="img_link"><img src="" id="jsyl_photo1" width="140" height="140"/></a>
+						<a href="#" class="name" id="jsyl_name1"></a>
+						<h3 id="jsyl_price1">￥</h3>
+						<div class="Detailed">
+							<div class="content">
+								<p class="center"><a href="#" class="Buy_btn">立即购买</a></p>
+							</div>
+						</div>
+					</li>
+					<li class="product_display">
+						<a href="#" class="Collect"><em></em>收藏</a>
+						<a href="#" class="img_link"><img src="" id="jsyl_photo2" width="140" height="140"/></a>
+						<a href="#" class="name" id="jsyl_name2"></a>
+						<h3 id="jsyl_price2">￥</h3>
+						<div class="Detailed">
+							<div class="content">
+								<p class="center"><a href="#" class="Buy_btn">立即购买</a></p>
+							</div>
+						</div>
+					</li>
+					<li class="product_display">
+						<a href="#" class="Collect"><em></em>收藏</a>
+						<a href="#" class="img_link"><img src="" id="jsyl_photo3" width="140" height="140"/></a>
+						<a href="#" class="name" id="jsyl_name3"></a>
+						<h3 id="jsyl_price3">￥</h3>
+						<div class="Detailed">
+							<div class="content">
+								<p class="center"><a href="#" class="Buy_btn">立即购买</a></p>
+							</div>
+						</div>
+					</li>
+					<li class="product_display">
+						<a href="#" class="Collect"><em></em>收藏</a>
+						<a href="#" class="img_link"><img src="" id="jsyl_photo4" width="140" height="140"/></a>
+						<a href="#" class="name" id="jsyl_name4"></a>
+						<h3 id="jsyl_price4">￥</h3>
+						<div class="Detailed">
+							<div class="content">
+								<p class="center"><a href="#" class="Buy_btn">立即购买</a></p>
+							</div>
+						</div>
+					</li>
+				</ul>
+		</div>
+	</div>
+	<div class="clearfix Plate_style">  
+		<div class="Plate_column Plate_column_left">
+			<div class="Plate_name">
+			<h2>生活用品</h2>
+			<div class="Sort_link"><a href="javascrpt:;" class="name" id="xyyp1">洗浴用品</a><a href="javascrpt:;" class="name" id="rcyz1">日常用纸</a><a href="javascrpt:;" class="name" id="shypqt1">其他</a></div>
+			<a href="#" class="Plate_link"> <img src="static/images/bk_img_19.png" /></a>
+			</div>
+			<div class="Plate_product">
+					<ul id="ssyp_lists">
+							<li class="product_display">
+								<a href="#" class="Collect"><em></em>收藏</a>
+								<a href="#" class="img_link"><img src="" id="shyp_photo1" width="140" height="140"/></a>
+								<a href="#" class="name" id="shyp_name1"></a>
+								<h3 id="shyp_price1">￥</h3>
+								<div class="Detailed">
+									<div class="content">
+										<p class="center"><a href="#" class="Buy_btn">立即购买</a></p>
+									</div>
+								</div>
+							</li>
+							<li class="product_display">
+								<a href="#" class="Collect"><em></em>收藏</a>
+								<a href="#" class="img_link"><img src="" id="shyp_photo2" width="140" height="140"/></a>
+								<a href="#" class="name" id="shyp_name2"></a>
+								<h3 id="shyp_price2">￥</h3>
+								<div class="Detailed">
+									<div class="content">
+										<p class="center"><a href="#" class="Buy_btn">立即购买</a></p>
+									</div>
+								</div>
+							</li>
+							<li class="product_display">
+								<a href="#" class="Collect"><em></em>收藏</a>
+								<a href="#" class="img_link"><img src="" id="shyp_photo3" width="140" height="140"/></a>
+								<a href="#" class="name" id="shyp_name3"></a>
+								<h3 id="shyp_price3">￥</h3>
+								<div class="Detailed">
+									<div class="content">
+										<p class="center"><a href="#" class="Buy_btn">立即购买</a></p>
+									</div>
+								</div>
+							</li>
+							<li class="product_display">
+								<a href="#" class="Collect"><em></em>收藏</a>
+								<a href="#" class="img_link"><img src="" id="shyp_photo4" width="140" height="140"/></a>
+								<a href="#" class="name" id="shyp_name4"></a>
+								<h3 id="shyp_price4">￥</h3>
+								<div class="Detailed">
+									<div class="content">
+										<p class="center"><a href="#" class="Buy_btn">立即购买</a></p>
+									</div>
+								</div>
+							</li>
+						</ul>
+		</div>
+	</div>
   <!--板块名称-->
-    <div class="Plate_column Plate_column_right">
-    <div class="Plate_name">
-    <h2>其他</h2>
-    <div class="Sort_link"><a href="#" class="name" id="zh1">杂货</a></div>
-    <a href="#" class="Plate_link"> <img src="static/images/bk_img_14.png" /></a>
-   
-    </div>
-    <div class="Plate_product">
-    <ul id="lists">
-     <li class="product_display">
-     <a href="" class="Collect"><em></em>收藏</a>
-     <a href="#" class="img_link"><img src="products/p_31.jpg"  width="140" height="140"/></a>
-     <a href="#" class="name">墨西哥原装进口 科罗娜啤酒</a>
-     <h3><b>￥</b>34.00</h3>
-    <div class="Detailed">
-	   <div class="content">
-		  <p class="center"><a href="#" class="Buy_btn">立即购买</a></p>
-		  </div>
-	   </div>
-     </li>
-     <li class="product_display">
-      <a href="" class="Collect"><em></em>收藏</a>
-     <a href="#" class="img_link"><img src="products/p_32.jpg"  width="140" height="140"/></a>
-     <a href="#" class="name">墨西哥原装进口 科罗娜啤酒</a>
-     <h3><b>￥</b>34.00</h3>
-      <div class="Detailed">
-	   <div class="content">
-		  <p class="center"><a href="#" class="Buy_btn">立即购买</a></p>
-		  </div>
-	   </div>
-     </li>
-     <li class="product_display">
-      <a href="" class="Collect"><em></em>收藏</a>
-     <a href="#" class="img_link"><img src="products/p_33.jpg"  width="140" height="140"/></a>
-     <a href="#" class="name">墨西哥原装进口 科罗娜啤酒</a>
-     <h3><b>￥</b>34.00</h3>
-       <div class="Detailed">
-	   <div class="content">
-		  <p class="center"><a href="#" class="Buy_btn">立即购买</a></p>
-		  </div>
-	   </div>
-     </li>
-     <li class="product_display">
-      <a href="" class="Collect"><em></em>收藏</a>
-     <a href="#" class="img_link"><img src="products/p_37.jpg"  width="140" height="140"/></a>
-     <a href="#" class="name">墨西哥原装进口 科罗娜啤酒 科罗娜啤酒</a>
-     <h3><b>￥</b>34.00</h3>
-     <div class="Detailed">
-	   <div class="content">
-		  <p class="center"><a href="#" class="Buy_btn">立即购买</a></p>
-		  </div>
-	   </div>
-     </li>
-    </ul>
-    </div>
-  </div>
- </div>
+	<div class="clearfix Plate_style"> 
+		<div class="Plate_column Plate_column_right">
+		<div class="Plate_name">
+		<h2>其他</h2>
+		<div class="Sort_link"><a href="javascrpt:;" class="name" id="zh1">杂货</a></div>
+		<a href="#" class="Plate_link"> <img src="static/images/bk_img_14.png" /></a>
+		</div>
+		<div class="Plate_product">
+				<ul id="qt_lists">
+						<li class="product_display">
+							<a href="#" class="Collect"><em></em>收藏</a>
+							<a href="#" class="img_link"><img src="" id="qt_photo1" width="140" height="140"/></a>
+							<a href="#" class="name" id="qt_name1"></a>
+							<h3 id="qt_price1">￥</h3>
+							<div class="Detailed">
+								<div class="content">
+									<p class="center"><a href="#" class="Buy_btn">立即购买</a></p>
+								</div>
+							</div>
+						</li>
+						<li class="product_display">
+							<a href="#" class="Collect"><em></em>收藏</a>
+							<a href="#" class="img_link"><img src="" id="qt_photo2" width="140" height="140"/></a>
+							<a href="#" class="name" id="qt_name2"></a>
+							<h3 id="qt_price2">￥</h3>
+							<div class="Detailed">
+								<div class="content">
+									<p class="center"><a href="#" class="Buy_btn">立即购买</a></p>
+								</div>
+							</div>
+						</li>
+						<li class="product_display">
+							<a href="#" class="Collect"><em></em>收藏</a>
+							<a href="#" class="img_link"><img src="" id="qt_photo3" width="140" height="140"/></a>
+							<a href="#" class="name" id="qt_name3"></a>
+							<h3 id="qt_price3">￥</h3>
+							<div class="Detailed">
+								<div class="content">
+									<p class="center"><a href="#" class="Buy_btn">立即购买</a></p>
+								</div>
+							</div>
+						</li>
+						<li class="product_display">
+							<a href="#" class="Collect"><em></em>收藏</a>
+							<a href="#" class="img_link"><img src="" id="qt_photo4" width="140" height="140"/></a>
+							<a href="#" class="name" id="qt_name4"></a>
+							<h3 id="qt_price4">￥</h3>
+							<div class="Detailed">
+								<div class="content">
+									<p class="center"><a href="#" class="Buy_btn">立即购买</a></p>
+								</div>
+							</div>
+						</li>
+					</ul>
+		</div>
+	</div>
  <!--友情链接-->
  <div class="link_style clearfix">
  <div class="title">友情链接</div>
  <div class="link_name">
-  <a href="#"><img src="products/logo/34.jpg"  width="100"/></a>
-  <a href="#"><img src="products/logo/34.jpg"  width="100"/></a>
-  <a href="#"><img src="products/logo/34.jpg"  width="100"/></a>
-  <a href="#"><img src="products/logo/34.jpg"  width="100"/></a>
-  <a href="#"><img src="products/logo/34.jpg"  width="100"/></a>
-  <a href="#"><img src="products/logo/34.jpg"  width="100"/></a>
-  <a href="#"><img src="products/logo/34.jpg"  width="100"/></a>
-  <a href="#"><img src="products/logo/34.jpg"  width="100"/></a>
-  <a href="#"><img src="products/logo/34.jpg"  width="100"/></a>
-  <a href="#"><img src="products/logo/34.jpg"  width="100"/></a>
-  <a href="#"><img src="products/logo/34.jpg"  width="100"/></a>
-  <a href="#"><img src="products/logo/34.jpg"  width="100"/></a>
-  <a href="#"><img src="products/logo/34.jpg"  width="100"/></a>
+  <a href="#"><img src="static/products/logo/34.jpg"  width="100"/></a>
+  <a href="#"><img src="static/products/logo/42.jpg"  width="100"/></a>
+  <a href="#"><img src="static/products/logo/152.jpg"  width="100"/></a>
+  <a href="#"><img src="static/products/logo/199.jpg"  width="100"/></a>
+  <a href="#"><img src="static/products/logo/245.jpg"  width="100"/></a>
+  <a href="#"><img src="static/products/logo/458.jpg"  width="100"/></a>
+  <a href="#"><img src="static/products/logo/618.jpg"  width="100"/></a>
+  <a href="#"><img src="static/products/logo/644.jpg"  width="100"/></a>
+  <a href="#"><img src="static/products/logo/690.jpg"  width="100"/></a>
+  <a href="#"><img src="static/products/logo/740.jpg"  width="100"/></a>
+  <a href="#"><img src="static/products/logo/6116.jpg"  width="100"/></a>
+  <a href="#"><img src="static/products/logo/1145.jpg"  width="100"/></a>
+  <a href="#"><img src="static/products/logo/1208.jpg"  width="100"/></a>
  </div>
  </div>
 </div>
 <!--网站地图-->
 <div class="fri-link-bg clearfix">
     <div class="fri-link">
-        <div class="logo left margin-r20"><img src="images/fo-logo.jpg" width="152" height="81" /></div>
-        <div class="left"><img src="images/qd.jpg" width="90"  height="90" />
+        <div class="logo left margin-r20"><img src="static/images/fo-logo.jpg" width="152" height="81" /></div>
+        <div class="left"><img src="static/images/qd.jpg" width="90"  height="90" />
             <p>扫描下载APP</p>
         </div>
        <div class="">
