@@ -7,7 +7,7 @@ import datetime
 conf = json.load(open("server_conf.json",encoding = "utf-8"))  # 加载配置信息
 
 
-def orderaddr_add(uid, uname, Receiver, ShipPhone, Adress):
+def orderaddr_add( uname, Receiver, ShipPhone, Adress):
     '''
     函数功能：增加地址，
     函数参数：uid 订单的用户ID
@@ -16,7 +16,7 @@ def orderaddr_add(uid, uname, Receiver, ShipPhone, Adress):
     conn = pymysql.connect(host=conf["db_server_ip"], port=conf["db_server_port"], user=conf["db_user"], passwd=conf["db_password"], db=conf["db_name"], charset="utf8")
     try:
         with conn.cursor() as cur:  # 获取一个游标对象(Cursor类)，用于执行SQL语句
-            cur.execute("insert into shipaddr values(%s,%s,%s,%s,%s)"%(uid, uname, Receiver, ShipPhone, Adress))
+            cur.execute("insert into shipaddr (addrID,uname, Receiver, ShipPhone, Adress,AddrState) values(default,%s,%s,%s,%s,default)",(uname, Receiver, ShipPhone, Adress))
             conn.commit()  
             return 0   
     finally: 
@@ -34,7 +34,7 @@ def orderaddr_del(uid):
     conn = pymysql.connect(host=conf["db_server_ip"], port=conf["db_server_port"], user=conf["db_user"], passwd=conf["db_password"], db=conf["db_name"], charset="utf8")
     try:
         with conn.cursor() as cur:  # 获取一个游标对象(Cursor类)，用于执行SQL语句
-            cur.execute("delete from shipaddr where uid=%s"%uid)
+            cur.execute("update shipaddr set AddrState=%s where addrID=%s",(2,uid))
             conn.commit()  
             return 0   
     finally: 

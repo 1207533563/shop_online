@@ -186,14 +186,31 @@ def repasswd():
         return redirect(url_for("login_handle"))
 
 
-@app.route("/merch_manage")  #商品管理
+@app.route("/product_manage")  #商品管理
 def merch_manage():
-    return render_template("merch_manage.html")
+    return render_template("product_manage.html")
 
 
 @app.route("/product_list")  #商品列表
 def product_list():
     return render_template("product_list.html")
+
+@app.route("/receiver_address")  #收货地址
+def receiver_address():
+    return render_template("receiver_address.html")
+
+@app.route("/orderaddr_update")  #修改收货地址
+def orderaddr_update():
+    addrID = request.args.get("addrID")
+    return render_template("orderaddr_update.html",addrID=addrID)
+
+
+@app.route("/update_product")  #修改商品
+def update_product():
+    MerchID = request.args.get("MerchID")
+    print(MerchID)
+    return render_template("update_product.html",MerchID=MerchID)
+    
 
 
 @app.route("/add_merch", methods=["GET", "POST"])  #添加商品
@@ -265,10 +282,10 @@ def update_merch():
     MerchPrice = request.args.get("MerchPrice")
     MerchID = request.args.get("MerchID")
 
-
     res = {"err": 1,"desc":"内部错误！"
         }  
     rsp = model.change_mearch(MerchName,MerchPrice,MerchID)
+
     if rsp == 0:
         res["err"] = 0
         res["desc"] = "修改成功！"
@@ -279,7 +296,7 @@ def update_merch():
     return jsonify(res)
 
 
-@app.route("/show_merch")  #修改商品信息网页展示商品信息的接口
+@app.route("/show_merch")  #修改商品信息网页展示商品信息的接口,按名字查找
 def show_merch():
     MerchName = request.args.get("MerchName")
     page = request.args.get("page")
@@ -296,6 +313,129 @@ def show_merch():
     if rsp_num != -1:
         res["info_num"] = rsp_num
     return jsonify(res)
+
+@app.route("/inquire_Merch_ByID")  #展示商品信息的接口,按ID查找
+def inquire_Merch_ByID():
+    MerchID = request.args.get("MerchID")
+    res = {"err": 1,"desc":"内部错误！","MerchInfo":{}
+        }  
+    rsp = model.inquire_Merch_ByID(MerchID)
+
+    if rsp != 1:
+        res["err"] = 0
+        res["desc"] = "查找成功！"
+        res["MerchInfo"] = rsp  
+    return jsonify(res)
+
+
+@app.route("/show_type_merch")  #展示商品信息的接口,按大类查找
+def show_type_merch():
+    MerchType = request.args.get("MerchType")
+    page = request.args.get("page")
+    pagesize = request.args.get("pagesize")
+    res = {"err": 1,"desc":"内部错误！","info_num":0,"MerchInfo":{}
+        }  
+    rsp = model.find_Type(MerchType,int(page),int(pagesize))
+    
+    if rsp != 1:
+        res["err"] = 0
+        res["desc"] = "查找成功！"
+        res["MerchInfo"] = rsp  
+    rsp_num = model.find_type_count(MerchType)
+    if rsp_num != -1:
+        res["info_num"] = rsp_num
+    return jsonify(res)
+
+
+# @app.route("/show_orderinfo")  #查找订单
+# def show_orderinfo():
+#     uid = request.args.get("uid")
+#     page = request.args.get("page")
+#     pagesize = request.args.get("pagesize")
+#     res = {"err": 1,"desc":"内部错误！","info_num":0,"MerchInfo":{}
+#         } 
+#     rsp = model.find_Type(MerchType,int(page),int(pagesize)) 
+
+
+
+@app.route('/add_address')
+def add_address():
+    uname = request.args.get("uname")
+    Receiver = request.args.get("Receiver")
+    ShipPhone = request.args.get("ShipPhone")
+    Adress = request.args.get("Adress")
+
+    res = {"err": 1,"desc":"内部错误！"
+        }  
+    print(uname,Receiver,ShipPhone,Adress)
+    rsp = model.orderaddr_add(uname,Receiver,ShipPhone,Adress)
+    if rsp == 0:
+        res["err"] = 0
+        res["desc"] = "增加成功！"
+
+    return jsonify(res)
+
+
+@app.route('/remove_address')
+def remove_address():
+    addrID = request.args.get("addrID")
+
+    res = {"err": 1,"desc":"内部错误！"
+        }  
+    rsp = model.orderaddr_del(addrID)
+    if rsp == 0:
+        res["err"] = 0
+        res["desc"] = "删除成功！"
+
+    return jsonify(res)
+
+
+@app.route('/change_address')
+def change_address():
+    Receiver = request.args.get("Receiver")
+    ShipPhone = request.args.get("ShipPhone")
+    Adress = request.args.get("Adress")
+    addrID = request.args.get("addrID")
+
+    res = {"err": 1,"desc":"内部错误！"
+        }  
+    rsp = model.orderaddr_update(Receiver,ShipPhone,Adress,addrID)
+    if rsp == 0:
+        res["err"] = 0
+        res["desc"] = "修改成功！"
+
+    return jsonify(res)
+
+
+@app.route('/find_name_address')
+def find_name_address():
+    uname = request.args.get("uname")
+    res = {"err": 1,"desc":"内部错误！","addrinfo":{}
+        }  
+    rsp = model.orderaddr_inquire_name(uname)
+    if rsp != 1:
+       res["err"]= 0
+       res["desc"]= "查找成功"
+       res["addrinfo"]= rsp
+
+    return jsonify(res)
+
+
+@app.route('/find_ID_address')
+def find_ID_address():
+    addrID = request.args.get("addrID")
+    res = {"err": 1,"desc":"内部错误！","addrinfo":{}
+        }  
+    rsp = model.orderaddr_inquire_ID(addrID)
+    print(rsp)
+    if rsp != 1:
+       res["err"]= 0
+       res["desc"]= "查找成功"
+       res["addrinfo"]= rsp
+
+    return jsonify(res)
+
+
 
 
 @app.route("/send_sms_code")

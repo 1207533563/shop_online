@@ -29,8 +29,90 @@
 				});
 			});
 
+			var page = 1
+			$("#lastpage").click(function(){
+				if (page>1){
+					page = page -1
+				}
+				var typeid = $("#typelist a.on").attr("id")
+				var typename = ""
+				if (typeid == "zh"){
+					typename = ""
+				}
+				else if (typeid == "ls"){
+					typename = "零食"
+				}
+				else if (typeid == "js"){
+					typename = "酒水饮料"
+				}
+				else if (typeid == "sh"){
+					typename = "生活用品"
+				}
+				else if (typeid == "qt"){
+					typename = "其他"
+				}
+				console.log(typeid)
+				req_merchInfo(typeid,typename,page);
+								
+			});
+
+			$("#nextpage").click(function(){
+				var pagestr = $("#page_head").text()
+				var pagearr=pagestr.split("/");
+				var typeid = $("#typelist a.on").attr("id")
+				var typename = ""
+				if (typeid == "zh"){
+					typename = ""
+				}
+				else if (typeid == "ls"){
+					typename = "零食"
+				}
+				else if (typeid == "js"){
+					typename = "酒水饮料"
+				}
+				else if (typeid == "sh"){
+					typename = "生活用品"
+				}
+				else if (typeid == "qt"){
+					typename = "其他"
+				}
+				console.log(typeid)
+				if (page < parseInt(pagearr[1])){
+					page = page + 1;
+					req_merchInfo(typeid,typename,page);
+				}	 
+				
+				console.log(page,pagearr[1])
+				if (page==parseInt(pagearr[1])){
+					$("#nextpage").attr('href',"#")
+				}				
+			});
+
+
 			$("#zh").click(function(){
-			req_merchInfo("zh","",1);				
+				page = 1
+				req_merchInfo("zh","",page);				
+
+			});
+
+			$("#ls").click(function(){
+				page = 1
+				req_merchInfo("ls","零食",page);				
+
+			});
+			$("#js").click(function(){
+				page = 1
+				req_merchInfo("js","酒水饮料",page);				
+
+			});
+			$("#sh").click(function(){
+				page = 1
+				req_merchInfo("sh","生活用品",page);				
+
+			});
+			$("#qt").click(function(){
+				page = 1
+				req_merchInfo("qt","其他",page);				
 
 			});
 
@@ -43,26 +125,26 @@
 				}
 			}
 
-			function req_merchInfo(sortid,merchname,page){
+			function req_merchInfo(sortid,merchtype,page){
 				var typelist= ["zh","ls","js","sh","qt"]
 				removeByValue(typelist, sortid);
 
 				$.ajax({   //通过ajax获取后台的消息
-				url: "show_merch",
+				url: "show_type_merch",
 				type: "GET",
 
 				contentType: "application/json; charset=UTF-8",
 				data: {
-					MerchName: merchname,
+					MerchType: merchtype,
 					page: page,
-					pagesize: 16,
+					pagesize: 8,
 				},
 				success:function(data){
 						if (data["err"] === 0){  //接收商品信息成功
 							console.log(data)
 							var merchinfo_num = data["info_num"]
 							var merchinfo = data["MerchInfo"]
-							var pagecount = Math.ceil(merchinfo_num/16)
+							var pagecount = Math.ceil(merchinfo_num/8)
 							$("#page_head").html(page+"/"+pagecount)
 							var htmltext = "" 
 							for (i=0;i<merchinfo.length;i++){
@@ -145,7 +227,7 @@
 	<div class="Navigation" id="Navigation">
 		 <ul class="Navigation_name">
 			<li><a href="/">首页</a></li>
-			<li><a href="products_list">商城</a></li>
+			<li><a href="product_list">全部商品</a></li>
 			<li><a href="Brands">联系我们</a></li>
 		 </ul>			 
 		</div>
@@ -172,7 +254,7 @@
  </div>
  <div class="page_right_style" style="float: left;">
  <div class="Sorted">
-  <div class="Sorted_style">
+  <div class="Sorted_style" id="typelist">
    <a href="javascrpt:;" class="off" id="zh">综合<i class="iconfont icon-fold" ></i></a>
    <a href="javascrpt:;" class="on" id="ls">零食<i class="iconfont icon-fold" ></i></a>
    <a href="javascrpt:;" class="off" id="js">酒水<i class="iconfont icon-fold" ></i></a>
@@ -186,19 +268,19 @@
    <!--页数-->
    <div class="s_Paging">
    <span id="page_head"></span>
-   <a href="javascrpt:;" class="on">&lt;</a>
-   <a href="javascrpt:;">&gt;</a>
+   <a href="javascrpt:;" class="on" id="lastpage">&lt;</a>
+   <a href="javascrpt:;" id="nextpage">&gt;</a>
    </div>
    </div>
    <div class="p_list  clearfix">
    <ul id="product_show"></ul>
    <div class="Paging">
-    <div class="Pagination">
+    <!-- <div class="Pagination">
     <a href="#">首页</a>
      <a href="#" class="pn-prev disabled">&lt;上一页</a>
 	 <a href="#">下一页&gt;</a>
 	 <a href="#">尾页</a>	
-     </div>
+     </div> -->
     </div>
    </div>
 </div>
