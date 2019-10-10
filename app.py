@@ -210,6 +210,10 @@ def update_product():
     MerchID = request.args.get("MerchID")
     print(MerchID)
     return render_template("update_product.html",MerchID=MerchID)
+
+@app.route("/user_orders")  #订单
+def user_orders():
+    return render_template("user_orders.html")
     
 
 
@@ -245,7 +249,7 @@ def add_merch():
 
             
 
-@app.route("/req_merchInfo")  #请求商品信息接口
+@app.route("/req_merchInfo")  #请求商品信息接口通过类型
 def req_merchInfo():
     MerchType = request.args.get("merchtype")
     res = {"err": 1,"MerchType":MerchType,
@@ -347,6 +351,21 @@ def show_type_merch():
     return jsonify(res)
 
 
+@app.route('/remove_merch')
+def remove_merch():
+    MerchID = request.args.get("MerchID")
+    print(MerchID)
+
+    res = {"err": 1,"desc":"内部错误！"
+        }  
+    rsp = model.delete_mearch(MerchID)
+    if rsp == 0:
+        res["err"] = 0
+        res["desc"] = "删除成功！"
+
+    return jsonify(res)
+
+
 # @app.route("/show_orderinfo")  #查找订单
 # def show_orderinfo():
 #     uid = request.args.get("uid")
@@ -436,6 +455,68 @@ def find_ID_address():
     return jsonify(res)
 
 
+##############################订单增删改查############################
+@app.route('/order_add')
+def order_add():
+    MerchID = request.args.get('MerchID')
+    MerchName = request.args.get('MerchName')
+    Num = request.args.get('Num')
+    price = request.args.get('price')
+    Merchsum=float(Num)*float(price)
+    addrID = request.args.get('addrID')
+    res={
+        "err":1,"desc":"内部错误"
+    }
+    rsp=model.order_add(MerchID,MerchName,Num,price,Merchsum,addrID)
+    if rsp == 0:
+        res["err"]=0
+        res["desc"] = "订单添加成功"
+    return jsonify(res)
+
+
+@app.route('/order_remove')
+def order_remove():
+    OrderID = request.args.get('OrderID')
+    
+    res={
+        "err":1,"desc":"内部错误"
+    }
+    rsp=model.order_remove(OrderID)
+    if rsp == 0:
+        res["err"]=0
+        res["desc"] = "订单删除成功"
+    return jsonify(res)
+
+
+
+@app.route('/order_change')
+def order_change():
+    OrderID = request.args.get('OrderID')
+    res={
+        "err":1,"desc":"内部错误"
+    }
+    rsp=model.order_update(OrderID)
+    if rsp == 0:
+        res["err"]=0
+        res["desc"] = "订单收货成功"
+    return jsonify(res)
+
+
+
+@app.route('/order_find')
+def order_find():
+    uname = request.args.get('uname')
+    res={
+        "err":1,"desc":"内部错误","OrderInfo":{}
+    }
+    rsp=model.order_inquire(uname)
+    if rsp != 1:
+        res["err"]=0
+        res["desc"] = "订单查询成功"
+        res["OrderInfo"] =rsp
+    return jsonify(res)
+
+
 
 
 @app.route("/send_sms_code")
@@ -488,5 +569,10 @@ def send_sms_code(phone):
 
 
 
+
+
 if __name__ == "__main__":
     app.run(port=80, debug=True)
+
+
+

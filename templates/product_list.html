@@ -148,7 +148,7 @@
 							$("#page_head").html(page+"/"+pagecount)
 							var htmltext = "" 
 							for (i=0;i<merchinfo.length;i++){
-								htmltext += "<li class='gl-item'><em class='icon_special tejia'></em><div class='Borders'><div class='img'><a href='Product_Detailed.html'><img src='"+"static/products/"+merchinfo[i][6]+"'style='width:220px;height:220px'></a></div><div class='Price'><b>¥"+merchinfo[i][3]+"</b><span>/"+merchinfo[i][4]+"</span></div><div class='name'><a href='Product_Detailed.html'>"+merchinfo[i][1]+"</a></div><div class='p-operate'><a href='#' class='p-o-btn Collect'><em></em>购买</a><a href='#' class='p-o-btn shop_cart'><em></em>加入购物车</a></div></div></li>"								
+								htmltext += "<li class='gl-item'><em class='icon_special tejia'></em><div class='Borders'><div class='img'><a href='Product_Detailed.html'><img src='"+"static/products/"+merchinfo[i][6]+"'style='width:220px;height:220px'></a></div><div class='Price'><b>¥"+merchinfo[i][3]+"</b><span>/"+merchinfo[i][4]+"</span></div><div class='name'><a href='Product_Detailed.html'>"+merchinfo[i][1]+"</a></div><div class='p-operate'><a href='#' class='p-o-btn shop_cart'><em></em>加入购物车</a></div></div></li>"								
 							}
 							$("#product_show").html(htmltext)
 							$("#"+sortid).attr("class","on")

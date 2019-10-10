@@ -85,14 +85,40 @@
               $("#merchinfocount").html("共"+merchinfo_num+"条")
 							var htmltext = "" 
 							for (i=0;i<merchinfo.length;i++){
-								htmltext += '<tr><td><a href="#">'+merchinfo[i][0]+'</a></td><td>'+merchinfo[i][1]+'</td><td>￥'+merchinfo[i][3]+'</td><td class="operating_btn relative"><a href="#" class="sj_btn" >修改</a>  <a href="#" class="sj_btn" >删除</a></td></tr>'								
+								htmltext += '<tr><td>'+merchinfo[i][0]+'</a></td><td>'+merchinfo[i][1]+'</td><td>￥'+merchinfo[i][3]+'</td><td class="operating_btn relative"><a href="update_product?MerchID='+merchinfo[i][0]+'" class="sj_btn" >修改</a>  <a href="javascrpt:;" id="'+merchinfo[i][0]+'" class="sj_btn" >删除</a></td></tr>'								
               }
               $("#merch_info_table").html(htmltext)
+              $("#merch_info_table tr td a[href='javascrpt:;']").click(function(){
+                
+                var merchid = $(this).attr('id')
+              
+                delete_Merch(merchid)
+              })
 					
 						}
 					},
 				});
 			}
+
+
+      function delete_Merch(Merchid){  //删除商品
+      console.log(Merchid)
+      $.ajax({
+        url: "remove_merch",
+        type: "GET",
+				contentType: "application/json; charset=UTF-8",
+				data: {
+          MerchID: Merchid,
+				},
+				success:function(data){
+					if (data["err"] === 0){
+            alert("删除成功！")
+            window.location.reload();
+					}
+				}
+
+			});
+    }
     
 	});
 </script>
@@ -109,8 +135,8 @@
       <div class="Collection"><span>欢迎你</span><a href="#" class="green">{{session.get("user_info").get("uname")}}</a> <a id="logout" href="javascrpt:;" class="green">注销</a></div>
 	<div class="hd_top_manu clearfix">
 	  <ul class="clearfix">
-			<li class="hd_menu_tit" data-addclass="hd_menu_hover"><a href="#">首页</a></li> 
-			<li class="hd_menu_tit" data-addclass="hd_menu_hover"> <a href="#">个人中心</a> </li>
+			<li class="hd_menu_tit" data-addclass="hd_menu_hover"><a href="/">首页</a></li> 
+			<li class="hd_menu_tit" data-addclass="hd_menu_hover"> <a href="receiver_address">个人中心</a> </li>
 			<li class="hd_menu_tit" data-addclass="hd_menu_hover"><a href="#">我的购物车<b>(23)</b></a></li>		
 	  </ul>
 	</div>
@@ -123,7 +149,7 @@
     </div>
   </div>
   <div id="header"  class="header page_style">
-  <div class="logo"><a href="index"><img src="static/images/logo.png" /></a></div>
+  <div class="logo"><a href="/"><img src="static/images/logo.png" /></a></div>
   <!--结束图层-->
   <div class="Search">
         <div class="search_list">
@@ -163,31 +189,23 @@
 <!--菜单栏-->
 	<div class="Navigation" id="Navigation">
 		 <ul class="Navigation_name">
-			<li><a href="Home.html">首页</a></li>
-            <li><span class="bg_muen"></span><a href="#">半小时生活圈</a></li>
-			<li><a href="#">你身边的超市</a></li>
-			<li><a href="#">预售专区</a><em class="hot_icon"></em></li>
-			<li><a href="products_list.html">商城</a></li>			
-			<li><a href="#">好评商户</a></li>
-			<li><a href="#">热销活动</a></li>
+			<li><a href="/">首页</a></li>
+			<li><a href="products_list">商城</a></li>			
 			<li><a href="Brands.html">联系我们</a></li>
 		 </ul>			 
 		</div>
 	<script>$("#Navigation").slide({titCell:".Navigation_name li",trigger:"click"});</script>
     </div>
 </head>
+{%if session.get("user_info").get("priv")=="2" %}
 <!--商品专区-->
 <div class="Inside_pages clearfix">
 <div class="left_style">
 <!--列表-->
   <div class="menu_style">
    <ul class="menu_list">
-    <li><em></em><a href="店铺专区.html">店铺专区</a></li>
-    <li class="on"><em></em><a href="商品专区.html">商品专区</a></li>
-    <li><em></em><a href="订单专区.html">订单专区</a></li>
-    <li><em></em><a href="发货管理.html">发货管理</a></li>
-    <li><em></em><a href="收款账号.html">收款账户</a></li>
-    <li ><em></em><a href="我的报表.html">我的报表</a></li>
+      <li class="on"><em></em><a href="product_manage">商品专区</a></li>
+      <li><em></em><a href="#">订单专区</a></li>
    </ul>
   </div>
 </div>
@@ -197,7 +215,7 @@
    <div class="title_style"><em></em>商品专区</div>
    <div class="content_style">
     <div class="Products_area_style">
-     <div class="Add_product_style"><a href="商品专区-发布商品.html" class="Add_btn">发布商品</a> <a href="#">公共商品库下载</a></div>
+     <div class="Add_product_style"><a href="add_merch" class="Add_btn">发布商品</a> </div>
      <div class="Search_Add">
       <input name="serchmerch" id="serchmerch" type="text"  placeholder="输入搜索关键字" class="add_text"/>
      
@@ -227,6 +245,7 @@
   </div>
  </div>
 </div>
+{% endif %}
 <!--网站地图-->
 <div class="fri-link-bg clearfix">
     <div class="fri-link">

@@ -43,10 +43,10 @@ CREATE TABLE `ordertable` (
   `addrID` int unsigned,
   `OrderState` enum ('1', '2','3') NOT NULL DEFAULT '1', -- 1表示未收货，2表示已经收货,3表示已删除
   OrderTime datetime NOT NULL,
+`Merchsum` decimal(10,2) NOT NULL,
 	PRIMARY KEY (`OrderID`),
 	FOREIGN KEY (`addrID`) REFERENCES shipaddr (`addrID`)
 ) ENGINE=InnoDB  AUTO_INCREMENT=1001 DEFAULT CHARSET=utf8;
-
 
 
 
@@ -58,5 +58,20 @@ CREATE TABLE `orderinfo` (
 	`MerchName` varchar(50) NOT NULL,
   `Num` int(11) NOT NULL,
   `price` decimal(10,2) NOT NULL,
+`MerchPhoto` varchar(20) NOT NULL,  -- 商品图片
   FOREIGN KEY (`OrderID`) REFERENCES `ordertable` (`OrderID`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+-- 购物车表
+DROP TABLE IF EXISTS `shoppingcart`;  
+CREATE TABLE `shoppingcart` (
+  uname varchar(20) NOT NULL ,
+  `MerchID` varchar(10) NOT NULL,
+	`MerchName` varchar(50) NOT NULL,
+  `Num` int(11) NOT NULL,
+  `price` decimal(10,2) NOT NULL,
+`MerchPhoto` varchar(20) NOT NULL  -- 商品图片
+
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;

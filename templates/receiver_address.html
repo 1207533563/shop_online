@@ -190,7 +190,7 @@
 <!--菜单栏-->
 	<div class="Navigation" id="Navigation">
 		 <ul class="Navigation_name">
-			<li><a href="Home.html">首页</a></li>
+			<li><a href="/">首页</a></li>
 			<li><a href="product_list">商城</a></li>
 			<li><a href="Brands.html">联系我们</a></li>
 		 </ul>			 
@@ -220,10 +220,19 @@
       <dt class="transaction_manage"><em class="icon_1"></em>订单管理</dt>
       <dd>
         <ul>
-          <li> <a href="用户中心-我的订单.html">我的订单</a></li>
+          <li> <a href="user_orders">我的订单</a></li>
           <li> <a href="receiver_address">收货地址</a></li>
-          <li> <a href="#">缺货登记</a></li>
-          <li><a href="#">跟踪包裹</a></li>
+
+        </ul>
+      </dd>
+      {%if session.get("user_info").get("priv")=="2" %}
+      <dt class="transaction_manage"><em class="icon_1"></em>后台管理</dt>
+      <dd>
+        <ul>
+          <li> <a href="add_merch">进入后台</a></li>
+      {% endif %}
+ 
+
         </ul>
       </dd>
     </dl>
@@ -254,7 +263,7 @@
      <tr class="label"><td width="80px;">收货地址编号</td><td width="80px;">收货人</td><td width="220px;">收货地址</td><td width="120px;">电话手机</td><td width="80px;">操作</td></tr>
      </thead>
      <tbody id="addr_table">
-      <!-- <tr><td>1001</td><td>张小泉</td><td>大件路4号软件大厦B栋102室</td><td>12343323221</td><td><a href="#">修改</a> | <a href="#">删除</a></td></tr> -->
+     
      </tbody>
     </table>
    </div>  

@@ -18,12 +18,20 @@ def increase_mearch(a,b,c,d,e):
 
     try:
         with conn.cursor() as cur:
-            # print("insert into merchinfo  values (default,%s,%s,%s,%s,default,%s)"%(a,b,c,d,e))
-            cur.execute("select MerchName from merchinfo where MerchName=%s", (a))
+            # print("insert into merchinfo  values (default,%s,%s,%s,%s,default,%s)"%(a,b,c,d,e))           
+            cur.execute("select MerchName,MerchState from merchinfo where MerchName=%s", (a))
             if cur.rowcount == 0:
                 cur.execute('insert into merchinfo  values (default,%s,%s,%s,%s,default,%s)', (a,b,c,d,e))
                 conn.commit()
                 return 0
+            elif cur.rowcount > 0:
+                rows = cur.fetchone()
+                
+                if rows[1] == '2':
+                    cur.execute('update merchinfo set MerchState=1,MerchPhoto=%s where MerchName=%s', (e,a))
+                    conn.commit()
+                    return 0
+                
             else:
                 return 2
     except:
@@ -32,18 +40,19 @@ def increase_mearch(a,b,c,d,e):
     finally:
         cur.close()
 
+
 def delete_mearch(a):
     '''
     函数功能：删除商品
-    参数：（商品名称）
+    参数：（商品ID）
     返回值：删除成功返回0，删除失败返回1
     '''
     conn=pymysql.connect(host=conf["db_server_ip"], port=conf["db_server_port"], user=conf["db_user"],
                                    passwd=conf["db_password"], db=conf["db_name"], charset="utf8")
-
+    print(a)
     try:
         with conn.cursor() as cur:
-                cur.execute('UPDATE merchinfo SET MerchState = %s WHERE MerchName = %s',(2,a))
+                cur.execute('UPDATE merchinfo SET MerchState = 2 WHERE MerchID = %s',(a))
                 conn.commit()
                 return 0
     except:
@@ -70,7 +79,7 @@ def change_mearch(a,b,c):
             old_MerchName = cur.fetchone()
             if old_MerchName:
                 old_MerchName = old_MerchName[0]
-                print(old_MerchName)
+                
             if old_MerchName != a:
                 cur.execute("select MerchName from merchinfo where MerchName=%s", (a))
                 if cur.rowcount == 0:
@@ -101,7 +110,7 @@ def find_mearch_name(a,page,pagesize):
     page = (page-1)*pagesize
     try:
         with conn.cursor() as cur:
-            cur.execute("select * from merchinfo where MerchName Like '%{0}%' limit {1},{2}".format(a,page,pagesize))
+            cur.execute("select * from merchinfo where MerchName Like '%{0}%' AND MerchState=1 limit {1},{2}".format(a,page,pagesize))
             row = cur.fetchall()
             return row          
     except:
@@ -119,7 +128,7 @@ def find_mearch_count(a):
                                    passwd=conf["db_password"], db=conf["db_name"], charset="utf8")
     try:
         with conn.cursor() as cur:
-            cur.execute("select * from merchinfo where MerchName Like '%{0}%'".format(a))
+            cur.execute("select * from merchinfo where MerchName Like '%{0}%' AND MerchState=1".format(a))
             info_num = cur.rowcount
             return info_num          
     except:
@@ -137,7 +146,7 @@ def inquire_Merch_ByID(a):
                                    passwd=conf["db_password"], db=conf["db_name"], charset="utf8")
     try:
         with conn.cursor() as cur:
-            cur.execute("select * from merchinfo where MerchID=%s",(a))
+            cur.execute("select * from merchinfo where MerchID=%s AND MerchState=1",(a))
             row = cur.fetchall()
             return row         
     except:
@@ -155,15 +164,15 @@ def find_type_count(a):
                                    passwd=conf["db_password"], db=conf["db_name"], charset="utf8")
 
     if a =="零食":
-        sql =  'SELECT * FROM merchinfo WHERE MerchType = "早餐面包" or MerchType= "膨化食品" or MerchType="方便速食" or MerchType="其他零食" '
+        sql =  'SELECT * FROM merchinfo WHERE MerchType = "早餐面包" or MerchType= "膨化食品" or MerchType="方便速食" or MerchType="其他零食" AND MerchState=1'
     elif a =="酒水饮料":
-        sql =  'SELECT * FROM merchinfo WHERE MerchType = "啤酒" or MerchType= "碳酸饮料" or MerchType="其他酒水饮料" '
+        sql =  'SELECT * FROM merchinfo WHERE MerchType = "啤酒" or MerchType= "碳酸饮料" or MerchType="其他酒水饮料" AND MerchState=1'
     elif a =="生活用品":
-        sql =  'SELECT * FROM merchinfo WHERE MerchType = "洗浴用品" or MerchType= "其他生活用品" or MerchType="其他生活用品" '
+        sql =  'SELECT * FROM merchinfo WHERE MerchType = "洗浴用品" or MerchType= "其他生活用品" or MerchType="其他生活用品" AND MerchState=1'
     elif a =="":
-        sql = 'select * from merchinfo '
+        sql = 'select * from merchinfo where MerchState=1'
     else:
-        sql =  'SELECT * FROM merchinfo WHERE MerchType = "杂货"'
+        sql =  'SELECT * FROM merchinfo WHERE MerchType ="杂货" AND MerchState=1'
     try:
         with conn.cursor() as cur:
             cur.execute(sql)
@@ -187,7 +196,7 @@ def find_mearch_type(a):
 
     try:
         with conn.cursor() as cur:
-            cur.execute('select * from merchinfo where MerchType = %s',(a))
+            cur.execute('select * from merchinfo where MerchType = %s AND MerchState=1',(a))
             row = cur.fetchall()
             return row
     except:
@@ -199,7 +208,7 @@ def find_mearch_type(a):
 
 def find_Type(a,page,pagesize):
     '''
-    函数功能：根据商品大类查找商品
+    函数功能：根据商品大类查找商品信息
     参数：（商品类型,页码,每页显示数量）
     返回值：查找成功返回商品信息（元组数据类型），查找失败返回1
     '''
@@ -208,16 +217,17 @@ def find_Type(a,page,pagesize):
     page = (page-1)*pagesize
 
     if a =="零食":
-        sql =  'SELECT * FROM merchinfo WHERE MerchType = "早餐面包" or MerchType= "膨化食品" or MerchType="方便速食" or MerchType="其他零食" limit {0},{1}'.format(page,pagesize)
+        sql =  'SELECT * FROM merchinfo WHERE MerchType = "早餐面包" or MerchType= "膨化食品" or MerchType="方便速食" or MerchType="其他零食" AND MerchState=1 limit {0},{1}'.format(page,pagesize)
     elif a =="酒水饮料":
-        sql =  'SELECT * FROM merchinfo WHERE MerchType = "啤酒" or MerchType= "碳酸饮料" or MerchType="其他酒水饮料" limit {0},{1}'.format(page,pagesize)
+        sql =  'SELECT * FROM merchinfo WHERE MerchType = "啤酒" or MerchType= "碳酸饮料" or MerchType="其他酒水饮料" AND MerchState=1 limit {0},{1}'.format(page,pagesize)
     elif a =="生活用品":
-        sql =  'SELECT * FROM merchinfo WHERE MerchType = "洗浴用品" or MerchType= "其他生活用品" or MerchType="其他生活用品" limit {0},{1}'.format(page,pagesize)
+        sql =  'SELECT * FROM merchinfo WHERE MerchType = "洗浴用品" or MerchType= "其他生活用品" or MerchType="其他生活用品" AND MerchState=1 limit {0},{1}'.format(page,pagesize)
     elif a =="":
-        sql = 'select * from merchinfo  limit {0},{1}'.format(page,pagesize)
+        sql = 'select * from merchinfo where MerchState=1 limit {0},{1}'.format(page,pagesize)
     else:
-        sql =  'SELECT * FROM merchinfo WHERE MerchType = "杂货" limit {0},{1}'.format(page,pagesize)
-        
+        sql =  'SELECT * FROM merchinfo WHERE MerchType = "杂货" AND MerchState=1 limit {0},{1}'.format(page,pagesize)
+    
+    
     try:
         with conn.cursor() as cur:
             cur.execute(sql)
@@ -249,81 +259,6 @@ def find_mearch_photo(a):
     finally:
         cur.close()
 
-
-
-def order_add(uid):
-    '''
-    函数功能：增加订单，
-    函数参数：uid 订单的用户ID
-    函数返回值：增加成功返回0，失败返回1
-    '''
-    conn = pymysql.connect(host=conf["db_server_ip"], port=conf["db_server_port"], user=conf["db_user"], passwd=conf["db_password"], db=conf["db_name"], charset="utf8")
-    try:
-        with conn.cursor() as cur:  # 获取一个游标对象(Cursor类)，用于执行SQL语句
-            cur.execute("insert into ordertable values(default,%s,default)"%uid)
-            conn.commit()  
-            return 0   
-    finally: 
-        # 关闭数据库连接
-        conn.close()         
-    return 1 
-
-
-def order_update(OrderID):
-    '''
-    函数功能：修改订单状态，
-    函数参数：OrderID 订单ID
-    函数返回值：修改成功返回0，失败返回1
-    '''
-    conn = pymysql.connect(host=conf["db_server_ip"], port=conf["db_server_port"], user=conf["db_user"], passwd=conf["db_password"], db=conf["db_name"], charset="utf8")
-    try:
-        with conn.cursor() as cur:  # 获取一个游标对象(Cursor类)，用于执行SQL语句
-            cur.execute("update ordertable set OrderState=2 where OrderID=%s"%OrderID)
-            conn.commit()  
-            return 0   
-    finally: 
-        # 关闭数据库连接
-        conn.close()         
-    return 1 
-
-
-def order_inquire(key,value):
-    '''
-    函数功能：查找订单，
-    函数参数：key 查找的键,value查找的值
-    函数返回值：修改成功返回查找数据，失败返回1
-    '''
-    conn = pymysql.connect(host=conf["db_server_ip"], port=conf["db_server_port"], user=conf["db_user"], passwd=conf["db_password"], db=conf["db_name"], charset="utf8")
-
-    sql = "select * from ordertable where {0} ='{1}'".format(key,value)
-    try:
-        with conn.cursor() as cur:  # 获取一个游标对象(Cursor类)，用于执行SQL语句
-            cur.execute(sql)
-            rows = cur.fetchall()  
-            return rows    #返回查找结果集
-    finally: 
-        # 关闭数据库连接
-        conn.close()         
-    return 1 
-
-
-
-def orderinfo_add(OrderID,MerchID,MerchName,Num,price):
-    '''
-    函数功能：增加订单信息，
-    函数参数：OrderID，MerchID，MerchName，Num，price
-    函数返回值：增加成功返回0，失败返回1
-    '''
-    conn = pymysql.connect(host=conf["db_server_ip"], port=conf["db_server_port"], user=conf["db_user"], passwd=conf["db_password"], db=conf["db_name"], charset="utf8")
-    try:
-        with conn.cursor() as cur:  # 获取一个游标对象(Cursor类)，用于执行SQL语句
-            cur.execute("insert into orderinfo values(%s,%s,%s,%s,%s)",(OrderID,MerchID,MerchName,Num,price))
-            conn.commit()  
-            return 0   
-    finally: 
-        # 关闭数据库连接
-        conn.close()         
-    return 1 
 
 
 
@@ -418,3 +353,116 @@ def orderaddr_inquire_ID(addrID):
     return 1 
 
 
+def order_add(MerchID,MerchName,Num,price,Merchsum,addrID,MerchPhoto):
+    '''
+    函数功能：增加订单，
+    函数参数：uid 订单的用户ID
+    函数返回值：增加成功返回0，失败返回1
+    '''
+    conn = pymysql.connect(host=conf["db_server_ip"], port=conf["db_server_port"], user=conf["db_user"], passwd=conf["db_password"], db=conf["db_name"], charset="utf8")
+    try:
+        with conn.cursor() as cur:  # 获取一个游标对象(Cursor类)，用于执行SQL语句
+            cur.execute("insert into ordertable values(default,%s,default,sysdate(),%s)",(addrID,Merchsum))
+            conn.commit()
+            cur.execute("select max(OrderID) from ordertable where addrID=%s"%addrID)
+            row=cur.fetchone()
+            row=list(row)[0]
+            cur.execute("insert into orderinfo (OrderID,MerchID,MerchName,Num,price,MerchPhoto) values(%s,%s,%s,%s,%s,%s)",(row,MerchID,MerchName,Num,price,MerchPhoto))
+            conn.commit()  
+            return 0   
+    finally: 
+        # 关闭数据库连接
+        conn.close()         
+    return 1 
+
+
+def order_remove(OrderID):
+    '''
+    函数功能：删除订单，
+    函数参数：OrderID 订单ID
+    函数返回值：删除成功返回0，失败返回1
+    '''
+    conn = pymysql.connect(host=conf["db_server_ip"], port=conf["db_server_port"], user=conf["db_user"], passwd=conf["db_password"], db=conf["db_name"], charset="utf8")
+    try:
+        with conn.cursor() as cur:  # 获取一个游标对象(Cursor类)，用于执行SQL语句
+            cur.execute("update ordertable set OrderState=3 where OrderID=%s"%OrderID)
+            conn.commit()  
+            return 0   
+    finally: 
+        # 关闭数据库连接
+        conn.close()         
+    return 1 
+
+
+
+
+
+def order_update(OrderID):
+    '''
+    函数功能：订单确认收货，
+    函数参数：OrderID 订单ID
+    函数返回值：成功返回0，失败返回1
+    '''
+    conn = pymysql.connect(host=conf["db_server_ip"], port=conf["db_server_port"], user=conf["db_user"], passwd=conf["db_password"], db=conf["db_name"], charset="utf8")
+    try:
+        with conn.cursor() as cur:  # 获取一个游标对象(Cursor类)，用于执行SQL语句
+            cur.execute("update ordertable set OrderState=2 where OrderID=%s"%(OrderID))
+            conn.commit()  
+            # cur.execute("update orderinfo set MerchID=%s,MerchName=%s,Num=%s,price=%s,Merchsum=%s where OrderID=%s",(MerchID,MerchName,Num,price,Merchsum,OrderID))
+            # conn.commit() 
+            return 0   
+    finally: 
+        # 关闭数据库连接
+        conn.close()         
+    return 1 
+
+
+def order_inquire(uname):
+    '''
+    函数功能：查找订单，
+    函数参数：OrderID 订单编号
+    函数返回值：查找成功返回查找数据，失败返回1
+    '''
+    conn = pymysql.connect(host=conf["db_server_ip"], port=conf["db_server_port"], user=conf["db_user"], passwd=conf["db_password"], db=conf["db_name"], charset="utf8")
+
+    # print(("SELECT OrderID FROM ordertable WHERE addrID in (SELECT addrID FROM shipaddr WHERE uname=%s)"%uname))
+ 
+    try:
+        with conn.cursor() as cur:  # 获取一个游标对象(Cursor类)，用于执行SQL语句
+            cur.execute("SELECT * FROM ordertable WHERE OrderState<>3 and addrID in (SELECT addrID FROM shipaddr WHERE uname='%s' and Addrstate=1)"%uname)
+            rows_1 = cur.fetchall()  
+            # print(rows_1)
+            list_1=[]
+            
+            for i in rows_1:
+                temp = list(i)
+                temp.append([])
+                list_1.append(temp)
+            
+ 
+            cur.execute("SELECT * FROM orderinfo WHERE OrderID in(SELECT OrderID FROM ordertable WHERE OrderState<>3 and addrID in (SELECT addrID FROM shipaddr WHERE uname='%s' and Addrstate=1))"%uname)
+            rows_2 = cur.fetchall() 
+           
+            list_2=list(rows_2)
+       
+            for i in list_1:
+                for j in list_2:
+                    if j[0]==i[0]:
+                        
+                        i[5].append(j)
+
+            
+            list_1_1=[]
+            for i in list_1:
+                list_1_1.append(tuple(i))
+            rows_1_1=tuple(list_1_1)
+
+            
+            
+            return rows_1_1  #返回查找结果集
+    finally: 
+        # 关闭数据库连接
+        conn.close()         
+    return 1 
+
+order_inquire("root")
