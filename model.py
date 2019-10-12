@@ -217,11 +217,11 @@ def find_Type(a,page,pagesize):
     page = (page-1)*pagesize
 
     if a =="零食":
-        sql =  'SELECT * FROM merchinfo WHERE MerchType = "早餐面包" or MerchType= "膨化食品" or MerchType="方便速食" or MerchType="其他零食" AND MerchState=1 limit {0},{1}'.format(page,pagesize)
+        sql =  'SELECT * FROM merchinfo WHERE (MerchType = "早餐面包" or MerchType= "膨化食品" or MerchType="方便速食" or MerchType="其他零食") AND MerchState=1 limit {0},{1}'.format(page,pagesize)
     elif a =="酒水饮料":
-        sql =  'SELECT * FROM merchinfo WHERE MerchType = "啤酒" or MerchType= "碳酸饮料" or MerchType="其他酒水饮料" AND MerchState=1 limit {0},{1}'.format(page,pagesize)
+        sql =  'SELECT * FROM merchinfo WHERE (MerchType = "啤酒" or MerchType= "碳酸饮料" or MerchType="其他酒水饮料") AND MerchState=1 limit {0},{1}'.format(page,pagesize)
     elif a =="生活用品":
-        sql =  'SELECT * FROM merchinfo WHERE MerchType = "洗浴用品" or MerchType= "其他生活用品" or MerchType="其他生活用品" AND MerchState=1 limit {0},{1}'.format(page,pagesize)
+        sql =  'SELECT * FROM merchinfo WHERE (MerchType = "洗浴用品" or MerchType= "其他生活用品" or MerchType="其他生活用品") AND MerchState=1 limit {0},{1}'.format(page,pagesize)
     elif a =="":
         sql = 'select * from merchinfo where MerchState=1 limit {0},{1}'.format(page,pagesize)
     else:
@@ -367,7 +367,7 @@ def order_add(addrID,Merchsum,Info):
             cur.execute("select max(OrderID) from ordertable where addrID=%s"%addrID)
             row=cur.fetchone()[0]
             
-            for i in eval(Info):            
+            for i in Info:            
                 MerchID = i[0]
                 MerchName =i[1]
                 Num = i[2]
@@ -473,16 +473,22 @@ def order_inquire(uname):
 
 
 ###########################################购物车增删改查#######################################
-def shoppingcart_add(uname,MerchID,MerchName,Num,price,MerchPhoto):
+def shoppingcart_add(uname,MerchID,Num):
     '''
     函数功能：将商品增加到购物车，
-    函数参数：uname  用户名,MerchID 商品ID,MerchName 商品名,Num 商品数量,price,MerchPhoto
+    函数参数：uname  用户名,MerchID 商品ID,Num 数量
     函数返回值：增加成功返回0，失败返回1
     '''
     conn = pymysql.connect(host=conf["db_server_ip"], port=conf["db_server_port"], user=conf["db_user"], passwd=conf["db_password"], db=conf["db_name"], charset="utf8")
     try:
 
         with conn.cursor() as cur:  # 获取一个游标对象(Cursor类)，用于执行SQL语句
+            cur.execute("select * from merchinfo where  MerchID=%s ",(MerchID))
+            merchinfo = cur.fetchone()
+            MerchName = merchinfo[1]
+            price = merchinfo[3]
+            MerchPhoto = merchinfo[6]
+
             cur.execute("select Num from shoppingcart where uname=%s and MerchID=%s ",(uname,MerchID))
             if cur.rowcount == 0:
                 cur.execute("insert into shoppingcart (uname,MerchID,MerchName,Num,price,MerchPhoto) values(%s,%s,%s,%s,%s,%s)",(uname,MerchID,MerchName,Num,price,MerchPhoto))

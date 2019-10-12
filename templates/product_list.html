@@ -2,6 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="{{ url_for('static', filename='css/common.css') }}" rel="stylesheet" type="text/css" />
 <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" type="text/css" />
 <script src="{{ url_for('static', filename='js/jquery-1.8.3.min.js') }}" type="text/javascript"></script>
@@ -127,7 +128,7 @@
 
 			
 
-			function add_shopcart(merchID,MerchName,price,MerchPhoto){
+			function add_shopcart(merchID){
 				var uname = $(".Collection").children().eq(1).html()
 				if (uname != "免费注册"){
 					$.ajax({
@@ -137,10 +138,8 @@
                 data: {
                   uname: uname,
 				  MerchID: merchID,
-				  MerchName:MerchName,
 				  Num: 1,
-				  price: price,
-				  MerchPhoto :MerchPhoto,
+				
         
                 },
                 success:function(data){
@@ -196,11 +195,8 @@
 
 							$("#product_show .p-operate [href='javascrpt:;']").click(function(){
 									var merchID = $(this).parent().prev().children().eq(0).attr("id")
-									var MerchName = $(this).parent().prev().children().eq(0).html()
-									var price = $(this).parent().prev().prev().children().eq(0).html().split("")[1]
-									var MerchPhoto = $(this).parent().prev().prev().prev().children().eq(0).children().eq(0).attr("src").split("/")[2]
-										console.log(merchID,MerchName,price,MerchPhoto)
-									add_shopcart(merchID,MerchName,price,MerchPhoto)
+						
+									add_shopcart(merchID)
 								})
 							
 						}

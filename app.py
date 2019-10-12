@@ -372,14 +372,6 @@ def remove_merch():
     return jsonify(res)
 
 
-# @app.route("/show_orderinfo")  #查找订单
-# def show_orderinfo():
-#     uid = request.args.get("uid")
-#     page = request.args.get("page")
-#     pagesize = request.args.get("pagesize")
-#     res = {"err": 1,"desc":"内部错误！","info_num":0,"MerchInfo":{}
-#         } 
-#     rsp = model.find_Type(MerchType,int(page),int(pagesize)) 
 
 
 
@@ -462,20 +454,25 @@ def find_ID_address():
 
 
 ##############################订单增删改查############################
-@app.route('/order_add')
+@app.route('/order_add',methods=["Post"])
 def order_add():
-    addrID = request.args.get('addrID')
-    Merchsum = request.args.get('orderPrice')
-    Info = request.args.get('orderInfo')
-    
-    rsp=model.order_add(addrID,Merchsum,Info)
-    res={
-        "err":1,"desc":"内部错误"
-    }
-    if rsp == 0:
-        res["err"]=0
-        res["desc"] = "订单添加成功"
-    return jsonify(res)
+    if request.method=='POST':
+        data = request.get_data()
+        
+        data = json.loads(data.decode("utf-8"))
+        
+        addrID = data.get('addrID')
+        Merchsum = data.get('orderPrice')
+        Info = data.get('orderInfo')
+
+        rsp=model.order_add(addrID,Merchsum,Info)
+        res={
+            "err":1,"desc":"内部错误"
+        }
+        if rsp == 0:
+            res["err"]=0
+            res["desc"] = "订单添加成功"
+        return jsonify(res)
 
 
 @app.route('/order_remove')
@@ -526,15 +523,13 @@ def order_find():
 @app.route('/shoppingcart_add')
 def shoppingcart_add():
     MerchID = request.args.get('MerchID')
-    MerchName = request.args.get('MerchName')
     Num = request.args.get('Num')
-    price = request.args.get('price')
     uname = request.args.get('uname')
-    MerchPhoto = request.args.get("MerchPhoto")
+
     res={
         "err":1,"desc":"内部错误"
     }
-    rsp=model.shoppingcart_add(uname,MerchID,MerchName,Num,price,MerchPhoto)
+    rsp=model.shoppingcart_add(uname,MerchID,Num)
     if rsp == 0:
         res["err"]=0
         res["desc"] = "商品添加购物车成功"

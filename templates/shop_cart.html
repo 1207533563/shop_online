@@ -2,6 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link href="{{ url_for('static', filename='css/common.css') }}" rel="stylesheet" type="text/css" />
 <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" type="text/css" />
 <link href="{{ url_for('static', filename='css/user_style.css') }}" rel="stylesheet" type="text/css" />
@@ -102,6 +103,14 @@
             })
 
 					}
+
+          $(".product-remove").bind("click",function(){
+            var uname = $(".Collection").children().eq(1).html()
+            var doms = $(this).parent().prev().prev().prev().prev().children().eq(0)
+            var del_merchid = doms.children().eq(2).html().split(":")[1]
+            remove_Cart(uname,del_merchid)
+            window.location.reload();
+          })
 				}
 
 			});
@@ -151,16 +160,19 @@
                             return;
                           }
             var addrID = $("#Recv_Address").val().split(":")[1]
-              
+            
+            var data = JSON.stringify({ 
+              'addrID': addrID, 
+              'orderPrice': orderPrice,
+              'orderInfo': orderInfo}
+              )
+            
+            console.log(orderInfo) 
             $.ajax({
                 url: "order_add",
-                type: "GET",
+                type : "POST", 
                 contentType: "application/json; charset=UTF-8",
-                data: {
-                  addrID: addrID,
-                  orderPrice: orderPrice,
-                  orderInfo: orderInfo,
-                },
+                data: data,
                 success:function(data){
                   if (data["err"] === 0){
                    alert("提交成功！")
@@ -168,14 +180,11 @@
                 }
               });
 
-
-             console.log(orderInfo) 
-
-            // for (var x=0;x<orderInfo.length;x++){
-            //   var merchID_d = orderInfo[x][0]
-            //   remove_Cart(uname,merchID_d)
-            // }
-            // window.location.href = "user_orders";
+            for (var x=0;x<orderInfo.length;x++){
+              var merchID_d = orderInfo[x][0]
+              remove_Cart(uname,merchID_d)
+            }
+            window.location.href = "user_orders";
         })
 
 
