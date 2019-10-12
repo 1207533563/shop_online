@@ -214,6 +214,10 @@ def update_product():
 @app.route("/user_orders")  #订单
 def user_orders():
     return render_template("user_orders.html")
+
+@app.route("/shop_cart")  #订单
+def shop_cart():
+    return render_template("shop_cart.html")
     
 
 
@@ -348,6 +352,8 @@ def show_type_merch():
     rsp_num = model.find_type_count(MerchType)
     if rsp_num != -1:
         res["info_num"] = rsp_num
+
+    print(res)
     return jsonify(res)
 
 
@@ -458,16 +464,14 @@ def find_ID_address():
 ##############################订单增删改查############################
 @app.route('/order_add')
 def order_add():
-    MerchID = request.args.get('MerchID')
-    MerchName = request.args.get('MerchName')
-    Num = request.args.get('Num')
-    price = request.args.get('price')
-    Merchsum=float(Num)*float(price)
     addrID = request.args.get('addrID')
+    Merchsum = request.args.get('orderPrice')
+    Info = request.args.get('orderInfo')
+    
+    rsp=model.order_add(addrID,Merchsum,Info)
     res={
         "err":1,"desc":"内部错误"
     }
-    rsp=model.order_add(MerchID,MerchName,Num,price,Merchsum,addrID)
     if rsp == 0:
         res["err"]=0
         res["desc"] = "订单添加成功"
@@ -515,6 +519,83 @@ def order_find():
         res["desc"] = "订单查询成功"
         res["OrderInfo"] =rsp
     return jsonify(res)
+
+
+
+##############################购物车的增删改查############################
+@app.route('/shoppingcart_add')
+def shoppingcart_add():
+    MerchID = request.args.get('MerchID')
+    MerchName = request.args.get('MerchName')
+    Num = request.args.get('Num')
+    price = request.args.get('price')
+    uname = request.args.get('uname')
+    MerchPhoto = request.args.get("MerchPhoto")
+    res={
+        "err":1,"desc":"内部错误"
+    }
+    rsp=model.shoppingcart_add(uname,MerchID,MerchName,Num,price,MerchPhoto)
+    if rsp == 0:
+        res["err"]=0
+        res["desc"] = "商品添加购物车成功"
+    return jsonify(res)
+
+
+@app.route('/shoppingcart_one_remove')
+def shoppingcart_one_remove():
+    uname = request.args.get('uname')
+    MerchID = request.args.get('MerchID')
+    res={
+        "err":1,"desc":"内部错误"
+    }
+    rsp=model.shoppingcart_one_remove(uname,MerchID)
+    if rsp == 0:
+        res["err"]=0
+        res["desc"] = "商品删除成功"
+    return jsonify(res)
+
+@app.route('/shoppingcart_all_remove')
+def shoppingcart_all_remove():
+    uname = request.args.get('uname')
+    res={
+        "err":1,"desc":"内部错误"
+    }
+    rsp=model.shoppingcart_all_remove(uname)
+    if rsp == 0:
+        res["err"]=0
+        res["desc"] = "商品删除成功"
+    return jsonify(res)
+
+
+@app.route('/shoppingcart_change')
+def shoppingcart_change():
+    uname = request.args.get("uname")
+    MerchID = request.args.get('MerchID')
+    Num = request.args.get('Num')
+    res={
+        "err":1,"desc":"内部错误"
+    }
+    rsp=model.shoppingcart_update(uname,MerchID,Num)
+    if rsp == 0:
+        res["err"]=0
+        res["desc"] = "数量修改成功"
+    return jsonify(res)
+
+
+
+@app.route('/shoppingcart_find')
+def shoppingcart_find():
+    uname = request.args.get('uname')
+    res={
+        "err":1,"desc":"内部错误","shoppingcartinfo":{}
+    }
+    rsp=model.shoppingcart_inquire(uname)
+    if rsp !=1:
+        res["err"]=0
+        res["desc"] = "查询成功"
+        res["shoppingcartinfo"] =rsp
+    return jsonify(res)
+
 
 
 

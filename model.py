@@ -353,7 +353,7 @@ def orderaddr_inquire_ID(addrID):
     return 1 
 
 
-def order_add(MerchID,MerchName,Num,price,Merchsum,addrID,MerchPhoto):
+def order_add(addrID,Merchsum,Info):
     '''
     函数功能：增加订单，
     函数参数：uid 订单的用户ID
@@ -365,10 +365,16 @@ def order_add(MerchID,MerchName,Num,price,Merchsum,addrID,MerchPhoto):
             cur.execute("insert into ordertable values(default,%s,default,sysdate(),%s)",(addrID,Merchsum))
             conn.commit()
             cur.execute("select max(OrderID) from ordertable where addrID=%s"%addrID)
-            row=cur.fetchone()
-            row=list(row)[0]
-            cur.execute("insert into orderinfo (OrderID,MerchID,MerchName,Num,price,MerchPhoto) values(%s,%s,%s,%s,%s,%s)",(row,MerchID,MerchName,Num,price,MerchPhoto))
-            conn.commit()  
+            row=cur.fetchone()[0]
+            
+            for i in eval(Info):            
+                MerchID = i[0]
+                MerchName =i[1]
+                Num = i[2]
+                price = i[3]
+                MerchPhoto = i[4]
+                cur.execute("insert into orderinfo (OrderID,MerchID,MerchName,Num,price,MerchPhoto) values(%s,%s,%s,%s,%s,%s)",(row,MerchID,MerchName,Num,price,MerchPhoto))
+                conn.commit()  
             return 0   
     finally: 
         # 关闭数据库连接
@@ -465,4 +471,105 @@ def order_inquire(uname):
         conn.close()         
     return 1 
 
-order_inquire("root")
+
+###########################################购物车增删改查#######################################
+def shoppingcart_add(uname,MerchID,MerchName,Num,price,MerchPhoto):
+    '''
+    函数功能：将商品增加到购物车，
+    函数参数：uname  用户名,MerchID 商品ID,MerchName 商品名,Num 商品数量,price,MerchPhoto
+    函数返回值：增加成功返回0，失败返回1
+    '''
+    conn = pymysql.connect(host=conf["db_server_ip"], port=conf["db_server_port"], user=conf["db_user"], passwd=conf["db_password"], db=conf["db_name"], charset="utf8")
+    try:
+
+        with conn.cursor() as cur:  # 获取一个游标对象(Cursor类)，用于执行SQL语句
+            cur.execute("select Num from shoppingcart where uname=%s and MerchID=%s ",(uname,MerchID))
+            if cur.rowcount == 0:
+                cur.execute("insert into shoppingcart (uname,MerchID,MerchName,Num,price,MerchPhoto) values(%s,%s,%s,%s,%s,%s)",(uname,MerchID,MerchName,Num,price,MerchPhoto))
+                conn.commit()  
+                return 0   
+            else :
+                new_num = int(cur.fetchone()[0]) + int(Num)
+                cur.execute("update shoppingcart set Num=%s where MerchID=%s and uname=%s",(new_num,MerchID,uname))
+                conn.commit()
+                return 0
+           
+    finally: 
+        # 关闭数据库连接
+        conn.close()         
+    return 1 
+
+
+def shoppingcart_one_remove(uname,MerchID):
+    '''
+    函数功能：删除指定用户名的某件商品，
+    函数参数：uname 用户名,MerchID 商品ID（通过用户名和商品ID删除单个商品）
+    函数返回值：删除成功返回0，失败返回1
+    '''
+    conn = pymysql.connect(host=conf["db_server_ip"], port=conf["db_server_port"], user=conf["db_user"], passwd=conf["db_password"], db=conf["db_name"], charset="utf8")
+    try:
+        with conn.cursor() as cur:  # 获取一个游标对象(Cursor类)，用于执行SQL语句
+            cur.execute("DELETE FROM shoppingcart WHERE uname=%s and MerchID=%s",(uname,MerchID))
+            conn.commit()  
+            return 0   
+    finally: 
+        # 关闭数据库连接
+        conn.close()         
+    return 1 
+
+def shoppingcart_all_remove(uname):
+    '''
+    函数功能：清空购物车，
+    函数参数：uname 用户名 (通过用户名删除购物车所有商品)
+    函数返回值：删除成功返回0，失败返回1
+    '''
+    conn = pymysql.connect(host=conf["db_server_ip"], port=conf["db_server_port"], user=conf["db_user"], passwd=conf["db_password"], db=conf["db_name"], charset="utf8")
+    try:
+        with conn.cursor() as cur:  # 获取一个游标对象(Cursor类)，用于执行SQL语句
+            cur.execute("DELETE FROM shoppingcart WHERE uname='%s'"%uname)
+            conn.commit()  
+            return 0   
+    finally: 
+        # 关闭数据库连接
+        conn.close()         
+    return 1 
+
+
+
+
+def shoppingcart_update(uname,MerchID,Num):
+    '''
+    函数功能：修改购物车某件商品数量，
+    函数参数：uname 用户名,MerchID  商品ID,Num 商品数量（通过用户名和商品ID来修改商品数量）
+    函数返回值：修改成功返回0，失败返回1
+    '''
+    conn = pymysql.connect(host=conf["db_server_ip"], port=conf["db_server_port"], user=conf["db_user"], passwd=conf["db_password"], db=conf["db_name"], charset="utf8")
+    try:
+        with conn.cursor() as cur:  # 获取一个游标对象(Cursor类)，用于执行SQL语句
+            cur.execute("update shoppingcart set Num=%s where MerchID=%s and uname=%s",(Num,MerchID,uname))
+            conn.commit()  
+            return 0   
+    finally: 
+        # 关闭数据库连接
+        conn.close()         
+    return 1 
+
+
+def shoppingcart_inquire(uname):
+    '''
+    函数功能：查找某用户的所有购物车商品，
+    函数参数：uname 用户名（通过用户名查找该用户购物车所有商品）
+    函数返回值：查找成功返回查找数据，失败返回1
+    '''
+    conn = pymysql.connect(host=conf["db_server_ip"], port=conf["db_server_port"], user=conf["db_user"], passwd=conf["db_password"], db=conf["db_name"], charset="utf8")
+
+ 
+    try:
+        with conn.cursor() as cur:  # 获取一个游标对象(Cursor类)，用于执行SQL语句
+            cur.execute("SELECT * FROM shoppingcart WHERE uname='%s'"%uname)
+            rows_1 = cur.fetchall()  
+            return rows_1  #返回查找结果集
+    finally: 
+        # 关闭数据库连接
+        conn.close()         
+    return 1 

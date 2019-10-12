@@ -125,6 +125,43 @@
 				}
 			}
 
+			
+
+			function add_shopcart(merchID,MerchName,price,MerchPhoto){
+				var uname = $(".Collection").children().eq(1).html()
+				if (uname != "免费注册"){
+					$.ajax({
+                url: "shoppingcart_add",
+                type: "GET",
+                contentType: "application/json; charset=UTF-8",
+                data: {
+                  uname: uname,
+				  MerchID: merchID,
+				  MerchName:MerchName,
+				  Num: 1,
+				  price: price,
+				  MerchPhoto :MerchPhoto,
+        
+                },
+                success:function(data){
+                  if (data["err"] === 0){
+                   alert("加入购物车成功！")
+                  }
+                }
+        		});
+				}
+
+				else{
+					// alert("请登录！")
+					location.href = "login"
+					window.event.returnValue=false;
+				}
+				
+				
+			}
+
+
+
 			function req_merchInfo(sortid,merchtype,page){
 				var typelist= ["zh","ls","js","sh","qt"]
 				removeByValue(typelist, sortid);
@@ -148,16 +185,28 @@
 							$("#page_head").html(page+"/"+pagecount)
 							var htmltext = "" 
 							for (i=0;i<merchinfo.length;i++){
-								htmltext += "<li class='gl-item'><em class='icon_special tejia'></em><div class='Borders'><div class='img'><a href='Product_Detailed.html'><img src='"+"static/products/"+merchinfo[i][6]+"'style='width:220px;height:220px'></a></div><div class='Price'><b>¥"+merchinfo[i][3]+"</b><span>/"+merchinfo[i][4]+"</span></div><div class='name'><a href='Product_Detailed.html'>"+merchinfo[i][1]+"</a></div><div class='p-operate'><a href='#' class='p-o-btn shop_cart'><em></em>加入购物车</a></div></div></li>"								
+								htmltext += "<li class='gl-item'><em class='icon_special tejia'></em><div class='Borders'><div class='img'><a href='Product_Detailed'><img src='"+"static/products/"+merchinfo[i][6]+"'style='width:220px;height:220px'></a></div><div class='Price'><b>¥"+merchinfo[i][3]+"</b><span>/"+merchinfo[i][4]+"</span></div><div class='name'><a id='"+merchinfo[i][0]+"' href='Product_Detailed.html'>"+merchinfo[i][1]+"</a></div><div class='p-operate'><a href='javascrpt:;' class='p-o-btn shop_cart'><em></em>加入购物车</a></div></div></li>"								
 							}
 							$("#product_show").html(htmltext)
 							$("#"+sortid).attr("class","on")
 							for ( var n = 0; n <typelist.length; n++){
 								$("#"+typelist[n]).attr("class","off")
 							}
+
+
+							$("#product_show .p-operate [href='javascrpt:;']").click(function(){
+									var merchID = $(this).parent().prev().children().eq(0).attr("id")
+									var MerchName = $(this).parent().prev().children().eq(0).html()
+									var price = $(this).parent().prev().prev().children().eq(0).html().split("")[1]
+									var MerchPhoto = $(this).parent().prev().prev().prev().children().eq(0).children().eq(0).attr("src").split("/")[2]
+										console.log(merchID,MerchName,price,MerchPhoto)
+									add_shopcart(merchID,MerchName,price,MerchPhoto)
+								})
+							
 						}
 					},
 				});
+
 			}
 	});
 </script>
@@ -172,9 +221,9 @@
 				<div class="Collection"><span>欢迎你</span><a href="#" class="green">{{session.get("user_info").get("uname")}}</a> <a id="logout" href="javascrpt:;" class="green">注销</a></div>
 			<div class="hd_top_manu clearfix">
 				<ul class="clearfix">
-				<li class="hd_menu_tit" data-addclass="hd_menu_hover"><a href="#">首页</a></li> 
-				<li class="hd_menu_tit" data-addclass="hd_menu_hover"> <a href="#">个人中心</a> </li>
-				<li class="hd_menu_tit" data-addclass="hd_menu_hover"><a href="#">我的购物车<b>(23)</b></a></li>	
+				<li class="hd_menu_tit" data-addclass="hd_menu_hover"><a href="/">首页</a></li> 
+				<li class="hd_menu_tit" data-addclass="hd_menu_hover"> <a href="receiver_address">个人中心</a> </li>
+				<li class="hd_menu_tit" data-addclass="hd_menu_hover"><a href="shop_cart">我的购物车<b>(23)</b></a></li>	
 				</ul>
 			</div>
 			{% else %}
